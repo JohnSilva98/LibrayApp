@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, TextInput, Button, Image} from 'react-native';
 import Header from './src/components/header/Header';
+import Arrivals from './src/components/arrivals/Arrivals';
+import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 class App extends Component {
   constructor(props) {
@@ -18,6 +20,7 @@ class App extends Component {
     return (
       <View style={styles.container}>
         <Header />
+        <Arrivals />
       </View>
     );
   }
