@@ -1,3 +1,4 @@
+import Footer from '../footer/Footer';
 import React, {Component} from 'react';
 import {
   View,
@@ -6,6 +7,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 
 class Arrivals extends Component {
@@ -39,34 +41,81 @@ class Arrivals extends Component {
           image: 'https://i.imgur.com/DvpvklR.png',
         },
       ],
+      myBooks: [
+        {
+          title: 'Just My Type',
+          author: 'Simon Garfield',
+          image: 'https://i.imgur.com/j0j8j8P.png', // Replace with an actual image URL for the book
+          returnDate: 'Return until 25.03.2020',
+          progress: 0.7, // 70% progress
+        },
+        {
+          title: 'Life Lessons',
+          author: 'Jane Smith',
+          image: 'https://i.imgur.com/DvpvklR.png',
+        },
+        {
+          title: 'The Explorer',
+          author: 'Carl Sagan',
+          image: 'https://i.imgur.com/DvpvklR.png',
+        },
+      ],
+      expanded: false,
     };
   }
+
+  toggleExpand = () => {
+    this.setState({expanded: !this.state.expanded});
+  };
+
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.textNews}>
-          <Text style={styles.newsStyle}>Novidades</Text>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.moreStyle}>Ver Mais</Text>
+      <View style={styles.screen}>
+        <View style={styles.container}>
+          <View style={styles.textNews}>
+            <Text style={styles.newsStyle}>Novidades</Text>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.moreStyle}>Ver Mais</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.books}>
+            <FlatList
+              horizontal={true}
+              data={this.state.books}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({item}) => <Books data={item} />}
+            />
+          </View>
+        </View>
+        <View style={styles.myBooksContainer}>
+          <Text style={styles.sectionTitle}>Meus livros</Text>
+          <TouchableOpacity onPress={this.toggleExpand} style={styles.holder}>
+            <View style={styles.holderLine} />
           </TouchableOpacity>
+          {this.state.myBooks[0] && <MyBookCard data={this.state.myBooks[0]} />}
+          {this.state.expanded && this.state.myBooks.length > 1 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.extraBooksContainer}>
+              {this.state.myBooks.slice(1).map((book, index) => (
+                <Books key={index} data={book} style={styles.extraBook} />
+              ))}
+            </ScrollView>
+          )}
         </View>
-        <View style={styles.books}>
-          <FlatList
-            horizontal={true}
-            data={this.state.books}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => <Books data={item} />}
-          />
-        </View>
+        <Footer />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     backgroundColor: '#f1f0ee',
-    height: 350,
+    flex: 1,
+  },
+  container: {
     padding: 8,
   },
   textNews: {
@@ -111,6 +160,74 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#555',
   },
+  myBooksContainer: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingTop: 12,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '60%', // Adjust height as needed
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111',
+    marginBottom: 10,
+  },
+  holder: {
+    alignSelf: 'center',
+    marginBottom: 20,
+    paddingVertical: 5,
+  },
+  holderLine: {
+    width: 40,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: '#ccc',
+  },
+  mainBookCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  myBookImage: {
+    width: 80,
+    height: 120,
+    borderRadius: 8,
+  },
+  bookInfo: {
+    marginLeft: 20,
+    flex: 1,
+  },
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111',
+  },
+  mainAuthor: {
+    fontSize: 18,
+    color: '#555',
+    marginBottom: 10,
+  },
+  returnDate: {
+    fontSize: 16,
+    color: '#f08c13',
+    marginBottom: 5,
+  },
+  progressBarContainer: {
+    height: 5,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#f08c13',
+  },
 });
 
 class Books extends Component {
@@ -120,6 +237,27 @@ class Books extends Component {
         <Image source={{uri: this.props.data.image}} style={styles.image} />
         <Text style={styles.title}>{this.props.data.title}</Text>
         <Text style={styles.author}>{this.props.data.author}</Text>
+      </View>
+    );
+  }
+}
+
+class MyBookCard extends Component {
+  render() {
+    const {data} = this.props;
+    return (
+      <View style={styles.mainBookCard}>
+        <Image source={{uri: data.image}} style={styles.myBookImage} />
+        <View style={styles.bookInfo}>
+          <Text style={styles.mainTitle}>{data.title}</Text>
+          <Text style={styles.mainAuthor}>{data.author}</Text>
+          <Text style={styles.returnDate}>{data.returnDate}</Text>
+          <View style={styles.progressBarContainer}>
+            <View
+              style={[styles.progressBar, {width: `${data.progress * 100}%`}]}
+            />
+          </View>
+        </View>
       </View>
     );
   }
