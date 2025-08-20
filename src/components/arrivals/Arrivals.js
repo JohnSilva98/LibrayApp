@@ -65,7 +65,7 @@ class Arrivals extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f2a4bb',
+    backgroundColor: '#f1f0ee',
     height: 350,
     padding: 8,
   },
@@ -73,11 +73,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
+    alignItems: 'center',
   },
   newsStyle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#111111',
+  },
+  moreStyle: {
+    fontSize: 20,
+    fontWeight: '400',
+    color: '#f08c13',
   },
   image: {
     height: 180,
@@ -94,10 +100,16 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 5,
   },
-  title: {fontSize: 20, fontWeight: '800', textAlign: 'left'},
+  title: {
+    fontSize: 20,
+    fontWeight: '800',
+    textAlign: 'left',
+    color: 'black',
+  },
   author: {
     fontSize: 16,
     fontWeight: '500',
+    color: '#555',
   },
 });
 
