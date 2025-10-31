@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    paddingTop: 12,
+    paddingTop: 20,
     paddingHorizontal: 20,
     position: 'absolute',
     bottom: 0,

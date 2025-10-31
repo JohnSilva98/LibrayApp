@@ -17,30 +17,32 @@ const Stack = createNativeStackNavigator();
 class App extends Component {
   render() {
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Splash">
-          <Stack.Screen
-            name="Splash"
-            component={Splash}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{title: 'Login'}}
-          />
-          <Stack.Screen
-            name="CreateAccount"
-            component={CreateAccount}
-            options={{title: 'Criar Conta'}}
-          />
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{title: 'Home'}}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Splash">
+            <Stack.Screen
+              name="Splash"
+              component={Splash}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{title: 'Login'}}
+            />
+            <Stack.Screen
+              name="CreateAccount"
+              component={CreateAccount}
+              options={{title: 'Criar Conta'}}
+            />
+            <Stack.Screen
+              name="HomeScreen"
+              component={HomeScreen}
+              options={{title: 'Home'}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </>
     );
   }
 }

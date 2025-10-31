@@ -7,9 +7,9 @@ const HomeScreen = () => {
   return (
     <>
       <Header />
-      <main>
-        <Arrivals />
-      </main>
+
+      <Arrivals />
+
       <Footer />
     </>
   );

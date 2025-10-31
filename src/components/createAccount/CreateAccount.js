@@ -8,7 +8,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-
 import {useNavigation} from '@react-navigation/native';
 
 function CreateAccount() {
@@ -31,7 +30,7 @@ function CreateAccount() {
     if (!form.firstName.trim()) e.firstName = 'Preencha o nome';
     if (!form.lastName.trim()) e.lastName = 'Preencha o ultimo nome';
     if (!form.dob) e.dob = 'Preencha a data de nascimento';
-    if (!form.gender) e.gender = 'Preencha o gênero';
+    // if (!form.gender) e.gender = 'Preencha o gênero';
     if (!form.phone.trim()) e.phone = 'Preencha o telefone';
     if (!form.email.trim()) e.email = 'Preencha o email';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
@@ -51,8 +50,12 @@ function CreateAccount() {
     const eobj = validate();
     setErrors(eobj);
     if (Object.keys(eobj).length === 0) {
-      alert('Conta criada com sucesso!');
+      console.log('Validação bem-sucedida! Tentando navegar...'); // ⬅️ Adicione este log
+      setSubmitted(true);
       navigation.navigate('HomeScreen'); // nome do seu destino na navegação
+    } else {
+      console.log('Validação falhou. Erros:', eobj); // ⬅️ E este log
+      setSubmitted(false);
     }
   };
 
@@ -82,7 +85,6 @@ function CreateAccount() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{padding: 20}}>
       <Text style={{fontSize: 22, marginBottom: 12}}>Criar conta / Login</Text>
-
       <View style={styles.row}>
         <View style={styles.field}>
           <Text style={styles.label}>Primeiro nome</Text>
@@ -110,7 +112,6 @@ function CreateAccount() {
           )}
         </View>
       </View>
-
       <View style={styles.field}>
         <Text style={styles.label}>Data de nascimento</Text>
         <TextInput
@@ -122,7 +123,6 @@ function CreateAccount() {
         />
         {errors.dob && <Text style={styles.error}>{errors.dob}</Text>}
       </View>
-
       {/* <View style={styles.field}>
         <Text style={styles.label}>Genero</Text>
         <Picker
@@ -135,7 +135,6 @@ function CreateAccount() {
         </Picker>
         {errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
       </View> */}
-
       <View style={styles.field}>
         <Text style={styles.label}>Telefone</Text>
         <TextInput
@@ -147,7 +146,6 @@ function CreateAccount() {
         />
         {errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
       </View>
-
       <View style={styles.field}>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -160,7 +158,6 @@ function CreateAccount() {
         />
         {errors.email && <Text style={styles.error}>{errors.email}</Text>}
       </View>
-
       <View style={styles.field}>
         <Text style={styles.label}>Senha</Text>
         <TextInput
@@ -172,9 +169,7 @@ function CreateAccount() {
         />
         {errors.password && <Text style={styles.error}>{errors.password}</Text>}
       </View>
-
       <Button title="Criar conta" onPress={handleSubmit} />
-
       {submitted && (
         <Text style={styles.success}>Formulário enviado com sucesso.</Text>
       )}

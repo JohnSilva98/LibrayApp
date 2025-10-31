@@ -7,7 +7,7 @@ const Splash = ({navigation}) => {
       <ScrollView contentContainerStyle={styles.content}>
         <Image
           source={require('../../assets/img/logoICPI.png')}
-          style={{width: 300, height: 200, marginBottom: 80}}
+          style={{width: 300, height: 300, marginBottom: 80}}
         />
         <Text style={styles.text}>Biblioteca Digital ICPI</Text>
         {/* Botões de navegação */}
