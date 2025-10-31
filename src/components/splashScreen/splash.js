@@ -1,10 +1,16 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, Button, StyleSheet, ScrollView, Image} from 'react-native';
 
 const Splash = ({navigation}) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
+        <Image
+          source={require('../../assets/img/logoICPI.png')}
+          style={{width: 300, height: 200, marginBottom: 80}}
+          resizeMode="contain"
+        />
+        <Text style={styles.text}>Biblioteca Digital ICPI</Text>
         {/* Botões de navegação */}
         <View style={styles.buttonsContainer}>
           <Button
@@ -31,5 +37,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 100,
   },
+  text: {color: '#ffffff', fontSize: 24, marginBottom: 20, fontWeight: 'bold'},
 });
 export default Splash;
