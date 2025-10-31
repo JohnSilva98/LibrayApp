@@ -26,7 +26,7 @@ class App extends Component {
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="Login"
+              name="LoginScreen"
               component={LoginScreen}
               options={{title: 'Login'}}
             />

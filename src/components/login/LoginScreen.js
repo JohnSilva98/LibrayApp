@@ -1,103 +1,109 @@
 import React, {useState} from 'react';
-
-// /c:/Projetos/LibrayApp/src/components/login/LoginScreen.js
+import {useNavigation} from '@react-navigation/native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
-  const handleSubmit = e => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!email.trim() || !password) {
       setError('Por favor, preencha email e senha.');
       return;
     }
+
     setError('');
-    // perform auth here if needed, then route to HomeScreen
-    navigate('/home');
+    // aqui você navega para a HomeScreen
+    navigation.navigate('HomeScreen');
   };
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <h2>Login</h2>
+    <View style={styles.container}>
+      <Text style={styles.title}>Login</Text>
 
-        <label style={styles.label}>
-          Email
-          <input
-            type="e-mail"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={styles.input}
-            placeholder="you@example.com"
-          />
-        </label>
+      <View style={styles.field}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          placeholder="you@example.com"
+          keyboardType="email-address"
+        />
+      </View>
 
-        <label style={styles.label}>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            style={styles.input}
-            placeholder="Password"
-          />
-        </label>
+      <View style={styles.field}>
+        <Text style={styles.label}>Senha</Text>
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+        />
+      </View>
 
-        {error && <div style={styles.error}>{error}</div>}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <button type="submit" style={styles.button}>
-          Login
-        </button>
-      </form>
-    </div>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Entrar</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    height: '100vh',
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
-    background: '#f5f5f5',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
   },
-  form: {
-    width: 320,
-    padding: 24,
-    borderRadius: 8,
-    background: '#fff',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  field: {
+    width: '100%',
+    marginBottom: 16,
   },
   label: {
-    display: 'flex',
-    flexDirection: 'column',
     fontSize: 14,
+    marginBottom: 6,
   },
   input: {
-    marginTop: 6,
-    padding: '8px 10px',
-    fontSize: 14,
-    borderRadius: 4,
-    border: '1px solid #ccc',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
   },
   button: {
-    marginTop: 6,
-    padding: '10px 12px',
-    fontSize: 16,
-    borderRadius: 4,
-    border: 'none',
-    background: '#007bff',
+    backgroundColor: '#007bff',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 10,
+  },
+  buttonText: {
     color: '#fff',
-    cursor: 'pointer',
+    fontSize: 16,
+    textAlign: 'center',
   },
   error: {
     color: '#b00020',
-    fontSize: 13,
+    marginBottom: 12,
   },
-};
+});

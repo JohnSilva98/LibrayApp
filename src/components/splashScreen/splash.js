@@ -19,7 +19,7 @@ const Splash = ({navigation}) => {
           <Button
             style={styles.login}
             title="Login"
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate('LoginScreen')}
           />
         </View>
       </ScrollView>
