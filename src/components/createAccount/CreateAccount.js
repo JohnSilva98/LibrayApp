@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-
+import {MaskedTextInput} from 'react-native-mask-text';
 function CreateAccount() {
   const [form, setForm] = useState({
     firstName: '',
@@ -21,6 +21,7 @@ function CreateAccount() {
   });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
   const validate = () => {
     const e = {};
@@ -54,11 +55,32 @@ function CreateAccount() {
     }
   };
 
+  const handleDob = value => {
+    const numericValue = value.replace(/\D/g, '');
+    // Limita o número de dígitos (por exemplo, 8 para ddmmaaaa)
+    const limitedValue = numericValue.substring(0, 8);
+    // Insere as barras nas posições corretas
+    let formattedValue = '';
+    if (limitedValue.length >= 2) {
+      formattedValue += limitedValue.substring(0, 2) + '/';
+      if (limitedValue.length >= 4) {
+        formattedValue += limitedValue.substring(2, 4) + '/';
+        if (limitedValue.length > 4) {
+          formattedValue += limitedValue.substring(4);
+        }
+      } else {
+        formattedValue += limitedValue.substring(2);
+      }
+    } else {
+      formattedValue += limitedValue;
+    }
+    // Atualiza o estado ou valor do input
+    setForm(s => ({...s, dob: formattedValue}));
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{padding: 20}}>
-      <Text style={{fontSize: 22, marginBottom: 12}}>
-        Create account / Login
-      </Text>
+      <Text style={{fontSize: 22, marginBottom: 12}}>Criar conta / Login</Text>
 
       <View style={styles.row}>
         <View style={styles.field}>
@@ -92,27 +114,26 @@ function CreateAccount() {
         <Text style={styles.label}>Data de nascimento</Text>
         <TextInput
           value={form.dob}
-          onChangeText={value => handleChange('dob', value)}
+          onChangeText={handleDob}
           style={styles.input}
           placeholder="DD/MM/YYYY"
+          keyboardType="number-pad"
         />
         {errors.dob && <Text style={styles.error}>{errors.dob}</Text>}
       </View>
 
-      <View style={styles.field}>
+      {/* <View style={styles.field}>
         <Text style={styles.label}>Genero</Text>
-        {/* <Picker
+        <Picker
           selectedValue={form.gender}
           onValueChange={value => handleChange('gender', value)}
           style={styles.input}>
-          <Picker.Item label="Choose..." value="" />
-          <Picker.Item label="Female" value="female" />
-          <Picker.Item label="Male" value="male" />
-          <Picker.Item label="Non-binary" value="nonbinary" />
-          <Picker.Item label="Prefer not to say" value="prefer_not" />
-        </Picker> */}
+          <Picker.Item label="Escolher" value="" />
+          <Picker.Item label="Feminino" value="female" />
+          <Picker.Item label="Masculino" value="male" />
+        </Picker>
         {errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
-      </View>
+      </View> */}
 
       <View style={styles.field}>
         <Text style={styles.label}>Telefone</Text>
