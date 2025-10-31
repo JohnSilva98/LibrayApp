@@ -62,13 +62,12 @@ function CreateAccount() {
 
       <View style={styles.row}>
         <View style={styles.field}>
-          <Text style={styles.label}>First name</Text>
+          <Text style={styles.label}>Primeiro nome</Text>
           <TextInput
-            name="firstName"
             value={form.firstName}
             onChangeText={value => handleChange('firstName', value)}
             style={styles.input}
-            placeholder="First name"
+            placeholder="Primeiro nome"
           />
           {errors.firstName && (
             <Text style={styles.error}>{errors.firstName}</Text>
@@ -76,13 +75,12 @@ function CreateAccount() {
         </View>
 
         <View style={styles.field}>
-          <Text style={styles.label}>Last name</Text>
+          <Text style={styles.label}>Ultimo nome</Text>
           <TextInput
-            name="lastName"
             value={form.lastName}
             onChangeText={value => handleChange('lastName', value)}
             style={styles.input}
-            placeholder="Last name"
+            placeholder="Ultimo nome"
           />
           {errors.lastName && (
             <Text style={styles.error}>{errors.lastName}</Text>
@@ -91,19 +89,18 @@ function CreateAccount() {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Date of birth</Text>
+        <Text style={styles.label}>Data de nascimento</Text>
         <TextInput
-          name="dob"
           value={form.dob}
           onChangeText={value => handleChange('dob', value)}
           style={styles.input}
-          placeholder="YYYY-MM-DD"
+          placeholder="DD/MM/YYYY"
         />
         {errors.dob && <Text style={styles.error}>{errors.dob}</Text>}
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Gender</Text>
+        <Text style={styles.label}>Genero</Text>
         {/* <Picker
           selectedValue={form.gender}
           onValueChange={value => handleChange('gender', value)}
@@ -118,9 +115,8 @@ function CreateAccount() {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Phone</Text>
+        <Text style={styles.label}>Telefone</Text>
         <TextInput
-          name="phone"
           value={form.phone}
           onChangeText={value => handleChange('phone', value)}
           style={styles.input}
@@ -133,7 +129,6 @@ function CreateAccount() {
       <View style={styles.field}>
         <Text style={styles.label}>Email</Text>
         <TextInput
-          name="email"
           value={form.email}
           onChangeText={value => handleChange('email', value)}
           style={styles.input}
@@ -145,22 +140,21 @@ function CreateAccount() {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Password</Text>
+        <Text style={styles.label}>Senha</Text>
         <TextInput
-          name="password"
           value={form.password}
           onChangeText={value => handleChange('password', value)}
           style={styles.input}
-          placeholder="Choose a secure password"
+          placeholder="Escolha uma senha segura"
           secureTextEntry={true}
         />
         {errors.password && <Text style={styles.error}>{errors.password}</Text>}
       </View>
 
-      <Button title="Submit" onPress={handleSubmit} />
+      <Button title="Criar conta" onPress={handleSubmit} />
 
       {submitted && (
-        <Text style={styles.success}>Form submitted successfully.</Text>
+        <Text style={styles.success}>Formulário enviado com sucesso.</Text>
       )}
     </ScrollView>
   );
@@ -191,6 +185,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
     fontSize: 13,
+    color: '#000000ff',
   },
   error: {
     marginTop: 6,
