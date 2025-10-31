@@ -72,14 +72,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 24,
+    color: '#000',
   },
   field: {
     width: '100%',
     marginBottom: 16,
+    color: '#000',
   },
   label: {
     fontSize: 14,
     marginBottom: 6,
+    color: '#000',
   },
   input: {
     backgroundColor: '#fff',
@@ -89,6 +92,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
+    color: '#000',
   },
   button: {
     backgroundColor: '#007bff',
