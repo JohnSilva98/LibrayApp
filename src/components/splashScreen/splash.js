@@ -8,7 +8,6 @@ const Splash = ({navigation}) => {
         <Image
           source={require('../../assets/img/logoICPI.png')}
           style={{width: 300, height: 200, marginBottom: 80}}
-          resizeMode="contain"
         />
         <Text style={styles.text}>Biblioteca Digital ICPI</Text>
         {/* Botões de navegação */}

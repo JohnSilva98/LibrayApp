@@ -8,8 +8,11 @@ import {
   ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import {MaskedTextInput} from 'react-native-mask-text';
+
+import {useNavigation} from '@react-navigation/native';
+
 function CreateAccount() {
+  const navigation = useNavigation();
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -48,10 +51,8 @@ function CreateAccount() {
     const eobj = validate();
     setErrors(eobj);
     if (Object.keys(eobj).length === 0) {
-      console.log('Submitted:', form);
-      setSubmitted(true);
-    } else {
-      setSubmitted(false);
+      alert('Conta criada com sucesso!');
+      navigation.navigate('HomeScreen'); // nome do seu destino na navegação
     }
   };
 
