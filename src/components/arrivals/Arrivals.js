@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Animated,
 } from 'react-native';
 
 class Arrivals extends Component {
@@ -61,14 +62,31 @@ class Arrivals extends Component {
         },
       ],
       expanded: false,
+
     };
+     // Valor animado da expansão
+    this.expandAnim = new Animated.Value(0); // 0 = fechado, 1 = aberto
+  
   }
 
   toggleExpand = () => {
+    const toValue = this.state.expanded ? 0 : 1;
+
+    Animated.timing(this.expandAnim, {
+      toValue,
+      duration: 400,
+      useNativeDriver: false, // height não funciona com nativeDriver
+    }).start();
+
     this.setState({expanded: !this.state.expanded});
   };
 
   render() {
+      // Interpolação da altura
+    const heightInterpolate = this.expandAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['50%', '100%'],
+    });
     return (
       <View style={styles.screen}>
         <View style={styles.container}>
@@ -87,12 +105,16 @@ class Arrivals extends Component {
             />
           </View>
         </View>
-        <View style={styles.myBooksContainer}>
+        {/* Animated.View substitui o View normal */}
+        <Animated.View style={[styles.myBooksContainer, {height: heightInterpolate}]}>
           <Text style={styles.sectionTitle}>Meus livros</Text>
+
           <TouchableOpacity onPress={this.toggleExpand} style={styles.holder}>
             <View style={styles.holderLine} />
           </TouchableOpacity>
+
           {this.state.myBooks[0] && <MyBookCard data={this.state.myBooks[0]} />}
+
           {this.state.expanded && this.state.myBooks.length > 1 && (
             <ScrollView
               horizontal
@@ -103,7 +125,7 @@ class Arrivals extends Component {
               ))}
             </ScrollView>
           )}
-        </View>
+        </Animated.View>
         <Footer />
       </View>
     );
@@ -170,7 +192,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: '60%', // Adjust height as needed
+    height: '50%', // Adjust height as needed
   },
   sectionTitle: {
     fontSize: 24,
