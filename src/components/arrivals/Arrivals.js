@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   moreStyle: {fontSize: 20, fontWeight: '400', color: '#f08c13'},
   image: {height: 180, width: 120, borderRadius: 8, marginBottom: 8},
   card: {width: 140, marginRight: 10, alignItems: 'center'},
-  books: {padding: 10, marginRight: 5, height: 150},
+  books: {padding: 10, marginRight: 5},
   title: {fontSize: 20, fontWeight: '800', textAlign: 'left', color: 'black'},
   author: {fontSize: 16, fontWeight: '500', color: '#555'},
   myBooksContainer: {
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 20,
     position: 'absolute',
-    bottom: -70,
+    bottom: 0,
     left: 0,
     right: 0,
   },

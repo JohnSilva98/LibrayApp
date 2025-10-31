@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 8,
     fontSize: 14,
+    color: '#000',
   },
   label: {
     marginBottom: 6,
