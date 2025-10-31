@@ -1,27 +1,46 @@
+// importação de libs
+
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, TextInput, Button, Image} from 'react-native';
-import Header from './src/components/header/Header';
-import Arrivals from './src/components/arrivals/Arrivals';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+// importação das paginas do app
+import HomeScreen from './src/components/homeScreen/HomeScreen';
+import Splash from './src/components/splashScreen/splash';
+import LoginScreen from './src/components/login/LoginScreen';
+import CreateAccount from './src/components/createAccount/CreateAccount';
+
+const Stack = createNativeStackNavigator();
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      nome: '',
-    };
-    this.getNome = this.getNome.bind(this);
-  }
-
-  getNome(text) {
-    this.setState({nome: text});
-  }
   render() {
     return (
-      <View style={styles.container}>
-        <Header />
-        <Arrivals />
-      </View>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Splash">
+          <Stack.Screen
+            name="Splash"
+            component={Splash}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{title: 'Login'}}
+          />
+          <Stack.Screen
+            name="CreateAccount"
+            component={CreateAccount}
+            options={{title: 'Criar Conta'}}
+          />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{title: 'Home'}}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }
