@@ -174,6 +174,7 @@ class Arrivals extends Component {
           {this.state.expanded && this.state.myBooks.length > 1 && (
             <FlatList
               data={this.state.myBooks.slice(1)}
+              horizontal={false}
               keyExtractor={(item, index) => index.toString()}
               numColumns={2} // 4 itens por linha
               contentContainerStyle={styles.extraBooksContainer}
