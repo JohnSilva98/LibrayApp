@@ -1,3 +1,4 @@
+// src/components/arrivals/Arrivals.js
 import React, {useContext, useState, useRef} from 'react';
 import {
   View,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   PanResponder,
+  Easing,
 } from 'react-native';
 import Footer from '../footer/Footer';
 import {DadosContext} from '../contextData/contextData';
@@ -18,10 +20,9 @@ const Arrivals = () => {
   const {books, myBooks} = useContext(DadosContext);
   const navigation = useNavigation();
 
-  // Filtra apenas os livros marcados como "novos"
   const newBooks = books.filter(book => book.isNew).slice(0, 8);
 
-  // =================== ANIMAÇÃO DO PAINEL ===================
+  // ANIMAÇÃO DO PAINEL
   const [expanded, setExpanded] = useState(false);
   const minHeight = 350;
   const maxHeight = 700;
@@ -29,8 +30,13 @@ const Arrivals = () => {
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      // NÂO ativar no start (permite que TouchableOpacity capture taps)
+      onStartShouldSetPanResponder: () => false,
+      // Ativa somente se for um movimento vertical significativo
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dy) > 8; // ajuste sensibilidade aqui
+      },
+
       onPanResponderMove: (_, gestureState) => {
         let newHeight = expanded
           ? maxHeight - gestureState.dy
@@ -38,16 +44,31 @@ const Arrivals = () => {
         newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
         expandAnim.setValue((newHeight - minHeight) / (maxHeight - minHeight));
       },
+
       onPanResponderRelease: (_, gestureState) => {
-        const threshold = (maxHeight - minHeight) / 2;
-        const shouldExpand = expanded
-          ? gestureState.dy < threshold
-          : -gestureState.dy > threshold;
+        const dragDistance = gestureState.dy;
+        const dragVelocity = gestureState.vy;
+        const swipeDown = dragDistance > 60 || dragVelocity > 0.6;
+        const swipeUp = dragDistance < -60 || dragVelocity < -0.6;
+
+        let shouldExpand = expanded;
+        if (expanded && swipeDown) shouldExpand = false;
+        else if (!expanded && swipeUp) shouldExpand = true;
+        else {
+          // decide pelo valor atual do animated
+          const current = expandAnim.__getValue
+            ? expandAnim.__getValue()
+            : null;
+          if (current !== null) shouldExpand = current > 0.5;
+        }
+
         Animated.timing(expandAnim, {
           toValue: shouldExpand ? 1 : 0,
-          duration: 200,
+          duration: 260,
+          easing: Easing.out(Easing.ease),
           useNativeDriver: false,
         }).start();
+
         setExpanded(shouldExpand);
       },
     }),
@@ -58,7 +79,7 @@ const Arrivals = () => {
     outputRange: [minHeight, maxHeight],
   });
 
-  // =================== RENDERIZAÇÃO ===================
+  // Render
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
@@ -78,7 +99,7 @@ const Arrivals = () => {
             showsHorizontalScrollIndicator={false}
             renderItem={({item}) => <BookCard data={item} />}
             keyExtractor={item => item.id.toString()}
-            contentContainerStyle={{columnGap: 10}}
+            contentContainerStyle={{paddingHorizontal: 10}}
           />
         </View>
       </View>
@@ -88,8 +109,22 @@ const Arrivals = () => {
         style={[styles.myBooksContainer, {height: heightInterpolate}]}>
         <Text style={styles.sectionTitle}>Meus livros</Text>
 
+        {/* Holder: TouchableOpacity para permitir onPress + panHandlers */}
         <View style={styles.holder} {...panResponder.panHandlers}>
-          <View style={styles.holderLine} />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              const target = expanded ? 0 : 1;
+              Animated.timing(expandAnim, {
+                toValue: target,
+                duration: 250,
+                easing: Easing.out(Easing.ease),
+                useNativeDriver: false,
+              }).start();
+              setExpanded(!expanded);
+            }}>
+            <View style={styles.holderLine} />
+          </TouchableOpacity>
         </View>
 
         {myBooks[0] && <MyBookCard data={myBooks[0]} />}
@@ -105,7 +140,7 @@ const Arrivals = () => {
                 paddingHorizontal: 10,
               }}
               renderItem={({item}) => <BookCard data={item} />}
-              contentContainerStyle={{paddingBottom: 100}}
+              contentContainerStyle={{paddingBottom: 120}}
             />
           </SafeAreaView>
         )}
@@ -116,7 +151,7 @@ const Arrivals = () => {
   );
 };
 
-// =================== COMPONENTES ===================
+// COMPONENTES
 const BookCard = ({data}) => (
   <View style={styles.card}>
     <Image source={{uri: data.image}} style={styles.image} />
@@ -146,7 +181,7 @@ const MyBookCard = ({data}) => (
   </View>
 );
 
-// =================== ESTILOS ===================
+// ESTILOS
 const styles = StyleSheet.create({
   screen: {backgroundColor: '#f1f0ee', flex: 1},
   container: {padding: 8},
@@ -190,6 +225,7 @@ const styles = StyleSheet.create({
     height: 60,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   holderLine: {width: 50, height: 10, borderRadius: 5, backgroundColor: '#ccc'},
   mainBookCard: {flexDirection: 'row', alignItems: 'center', marginBottom: 20},
