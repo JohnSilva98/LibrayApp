@@ -12,7 +12,6 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const BookDetails = () => {
-  const navigation = useNavigation();
   const route = useRoute();
   const {book} = route.params; // pegamos o livro passado via navegação
 

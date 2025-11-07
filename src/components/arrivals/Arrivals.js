@@ -21,6 +21,10 @@ const Arrivals = () => {
   const {books, myBooks} = useContext(DadosContext);
   const navigation = useNavigation();
 
+  const handleBookPress = book => {
+    navigation.navigate('BookDetails', {book});
+  };
+
   const newBooks = books.filter(book => book.isNew).slice(0, 8);
 
   const [expanded, setExpanded] = useState(false);
@@ -99,7 +103,11 @@ const Arrivals = () => {
             horizontal
             data={newBooks}
             showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => <BookCard data={item} />}
+            renderItem={({item}) => (
+              <TouchableOpacity onPress={() => handleBookPress(item)}>
+                <BookCard data={item} />
+              </TouchableOpacity>
+            )}
             keyExtractor={item => item.id.toString()}
             contentContainerStyle={{paddingHorizontal: 10}}
           />
