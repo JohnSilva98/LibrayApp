@@ -30,13 +30,18 @@ const Arrivals = () => {
 
   const panResponder = useRef(
     PanResponder.create({
-      // NÂO ativar no start (permite que TouchableOpacity capture taps)
+      // Do not activate pan responder on start to allow taps
       onStartShouldSetPanResponder: () => false,
-      // Ativa somente se for um movimento vertical significativo
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dy) > 8; // ajuste sensibilidade aqui
+      // Capture move events with low threshold
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dy) > 5,
+      onMoveShouldSetPanResponderCapture: (_, gestureState) =>
+        Math.abs(gestureState.dy) > 5,
+      onPanResponderGrant: () => {
+        // On gesture start, set offset to current animated value for continuity
+        expandAnim.setOffset(expandAnim._value || 0);
+        expandAnim.setValue(0);
       },
-
       onPanResponderMove: (_, gestureState) => {
         let newHeight = expanded
           ? maxHeight - gestureState.dy
@@ -48,24 +53,23 @@ const Arrivals = () => {
       onPanResponderRelease: (_, gestureState) => {
         const dragDistance = gestureState.dy;
         const dragVelocity = gestureState.vy;
-        const swipeDown = dragDistance > 60 || dragVelocity > 0.6;
-        const swipeUp = dragDistance < -60 || dragVelocity < -0.6;
+        const swipeDown = dragDistance > 40 || dragVelocity > 0.4;
+        const swipeUp = dragDistance < -40 || dragVelocity < -0.4;
 
         let shouldExpand = expanded;
         if (expanded && swipeDown) shouldExpand = false;
         else if (!expanded && swipeUp) shouldExpand = true;
         else {
-          // decide pelo valor atual do animated
           const current = expandAnim.__getValue
             ? expandAnim.__getValue()
             : null;
           if (current !== null) shouldExpand = current > 0.5;
         }
 
-        Animated.timing(expandAnim, {
+        Animated.spring(expandAnim, {
           toValue: shouldExpand ? 1 : 0,
-          duration: 260,
-          easing: Easing.out(Easing.ease),
+          speed: 10,
+          bounciness: 6,
           useNativeDriver: false,
         }).start();
 
@@ -106,26 +110,27 @@ const Arrivals = () => {
 
       {/* Painel de Meus Livros */}
       <Animated.View
-        style={[styles.myBooksContainer, {height: heightInterpolate}]}>
+        style={[styles.myBooksContainer, {height: heightInterpolate}]}
+        pointerEvents="box-none">
         <Text style={styles.sectionTitle}>Meus livros</Text>
 
-        {/* Holder: TouchableOpacity para permitir onPress + panHandlers */}
-        <View style={styles.holder} {...panResponder.panHandlers}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => {
-              const target = expanded ? 0 : 1;
-              Animated.timing(expandAnim, {
-                toValue: target,
-                duration: 250,
-                easing: Easing.out(Easing.ease),
-                useNativeDriver: false,
-              }).start();
-              setExpanded(!expanded);
-            }}>
-            <View style={styles.holderLine} />
-          </TouchableOpacity>
-        </View>
+        {/* PanHandlers directly on TouchableOpacity for better gesture handling */}
+        <TouchableOpacity
+          style={styles.holder}
+          activeOpacity={0.8}
+          {...panResponder.panHandlers}
+          onPress={() => {
+            const target = expanded ? 0 : 1;
+            Animated.spring(expandAnim, {
+              toValue: target,
+              speed: 8,
+              bounciness: 12,
+              useNativeDriver: false,
+            }).start();
+            setExpanded(!expanded);
+          }}>
+          <View style={styles.holderLine} />
+        </TouchableOpacity>
 
         {myBooks[0] && <MyBookCard data={myBooks[0]} />}
 
