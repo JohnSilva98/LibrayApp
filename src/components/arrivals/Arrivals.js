@@ -9,6 +9,7 @@ import {
   Animated,
   PanResponder,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import Footer from '../footer/Footer';
 
@@ -154,6 +155,10 @@ class Arrivals extends Component {
               data={this.state.books}
               showsHorizontalScrollIndicator={false}
               renderItem={({item}) => <Books data={item} />}
+              contentContainerStyle={{
+                paddingHorizontal: 0, // 👈 distância das bordas
+                columnGap: 0, // 👈 espaçamento entre os livros
+              }}
             />
           </View>
         </View>
@@ -173,14 +178,20 @@ class Arrivals extends Component {
 
           {this.state.expanded && this.state.myBooks.length > 1 && (
             <View style={{flex: 1}}>
-              <FlatList
-                data={this.state.myBooks.slice(1)}
-                keyExtractor={(item, index) => index.toString()}
-                numColumns={2} // 4 itens por linha
-                contentContainerStyle={styles.extraBooksContainer}
-                style={{flex: 1, flexGrow: 1}}
-                renderItem={({item}) => <Books data={item} />}
-              />
+              <SafeAreaView style={{flex: 1}}>
+                <FlatList
+                  data={this.state.myBooks.slice(1)}
+                  keyExtractor={(item, index) => index.toString()}
+                  numColumns={2} // 4 itens por linha
+                  contentContainerStyle={styles.extraBooksContainer}
+                  columnWrapperStyle={{
+                    justifyContent: 'space-between', // 👈 separa bem os livros na linha
+                    paddingHorizontal: 10, // 👈 ajusta a distância das bordas
+                  }}
+                  style={{flex: 1, flexGrow: 1}}
+                  renderItem={({item}) => <Books data={item} />}
+                />
+              </SafeAreaView>
             </View>
           )}
         </Animated.View>
@@ -244,7 +255,7 @@ const styles = StyleSheet.create({
   newsStyle: {fontSize: 28, fontWeight: 'bold', color: '#111111'},
   moreStyle: {fontSize: 20, fontWeight: '400', color: '#f08c13'},
   image: {height: 180, width: 120, borderRadius: 8, marginBottom: 8},
-  card: {width: 140, marginRight: 10, alignItems: 'center'},
+  card: {width: 140, alignItems: 'center'},
   books: {padding: 10, marginRight: 5},
   title: {fontSize: 20, fontWeight: '800', textAlign: 'left', color: 'black'},
   author: {fontSize: 16, fontWeight: '500', color: '#555'},
@@ -292,7 +303,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   progressBar: {height: '100%', backgroundColor: '#f08c13'},
-  extraBooksContainer: {paddingVertical: 10},
+  extraBooksContainer: {
+    paddingBottom: 100,
+  },
 });
 
 export default Arrivals;
