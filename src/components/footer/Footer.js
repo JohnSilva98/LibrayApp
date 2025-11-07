@@ -2,15 +2,22 @@ import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Search from '../search/Search';
+import {useNavigation} from '@react-navigation/native';
 
 const Footer = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.footerContainer}>
-      <TouchableOpacity style={styles.tab}>
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => navigation.navigate('HomeScreen')}>
         <Icon name="home" size={24} color="#f1f0ee" />
         <Text style={styles.tabText}>Home</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tab}>
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => navigation.navigate('Search')}>
         <Icon name="search-outline" size={24} color="#f1f0ee" />
         <Text style={styles.tabText}>Search</Text>
       </TouchableOpacity>

@@ -11,16 +11,16 @@ import HomeScreen from './src/components/homeScreen/HomeScreen';
 import Splash from './src/components/splashScreen/splash';
 import LoginScreen from './src/components/login/LoginScreen';
 import CreateAccount from './src/components/createAccount/CreateAccount';
-import DadosContext from './src/components/contextData/contextData';
+import {DadosProvider} from './src/components/contextData/contextData';
+import Search from './src/components/search/Search';
 
 const Stack = createNativeStackNavigator();
 
 class App extends Component {
   render() {
-    const sharedValue = {DadosProvider: DadosContext};
     return (
       <>
-        <DadosContext.Provider value={sharedValue}>
+        <DadosProvider>
           <NavigationContainer>
             <Stack.Navigator initialRouteName="Splash">
               <Stack.Screen
@@ -43,9 +43,14 @@ class App extends Component {
                 component={HomeScreen}
                 options={{title: 'Home'}}
               />
+              <Stack.Screen
+                name="Search"
+                component={Search}
+                options={{title: 'Search'}}
+              />
             </Stack.Navigator>
           </NavigationContainer>
-        </DadosContext.Provider>
+        </DadosProvider>
       </>
     );
   }
