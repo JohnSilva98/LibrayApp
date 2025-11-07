@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Search from '../search/Search';
+
 import {useNavigation} from '@react-navigation/native';
 
 const Footer = () => {
