@@ -13,6 +13,7 @@ import LoginScreen from './src/components/login/LoginScreen';
 import CreateAccount from './src/components/createAccount/CreateAccount';
 import {DadosProvider} from './src/components/contextData/contextData';
 import Search from './src/components/search/Search';
+import Library from './src/components/libraryBooks/Library';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +48,11 @@ class App extends Component {
                 name="Search"
                 component={Search}
                 options={{title: 'Search'}}
+              />
+              <Stack.Screen
+                name="Library"
+                component={Library}
+                options={{title: 'Library'}}
               />
             </Stack.Navigator>
           </NavigationContainer>
