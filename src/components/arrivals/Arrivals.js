@@ -6,19 +6,22 @@ import {
   Image,
   FlatList,
   Animated,
-  PanResponder,
   TouchableOpacity,
   SafeAreaView,
+  PanResponder,
 } from 'react-native';
 import Footer from '../footer/Footer';
 import {DadosContext} from '../contextData/contextData';
+import {useNavigation} from '@react-navigation/native';
 
 const Arrivals = () => {
   const {books, myBooks} = useContext(DadosContext);
+  const navigation = useNavigation();
 
-  // Filtra apenas os novos e limita a 8
+  // Filtra apenas os livros marcados como "novos"
   const newBooks = books.filter(book => book.isNew).slice(0, 8);
 
+  // =================== ANIMAÇÃO DO PAINEL ===================
   const [expanded, setExpanded] = useState(false);
   const minHeight = 350;
   const maxHeight = 700;
@@ -40,13 +43,11 @@ const Arrivals = () => {
         const shouldExpand = expanded
           ? gestureState.dy < threshold
           : -gestureState.dy > threshold;
-
         Animated.timing(expandAnim, {
           toValue: shouldExpand ? 1 : 0,
           duration: 200,
           useNativeDriver: false,
         }).start();
-
         setExpanded(shouldExpand);
       },
     }),
@@ -57,30 +58,32 @@ const Arrivals = () => {
     outputRange: [minHeight, maxHeight],
   });
 
+  // =================== RENDERIZAÇÃO ===================
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.textNews}>
           <Text style={styles.newsStyle}>Novidades</Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('NewBooks')}>
             <Text style={styles.moreStyle}>Ver Mais</Text>
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          horizontal
-          data={newBooks}
-          keyExtractor={item => item.id.toString()}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({item}) => <BookCard data={item} />}
-          contentContainerStyle={{
-            paddingHorizontal: 10,
-            columnGap: 10,
-          }}
-        />
+        <View style={styles.books}>
+          <FlatList
+            horizontal
+            data={newBooks}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item}) => <BookCard data={item} />}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={{columnGap: 10}}
+          />
+        </View>
       </View>
 
-      {/* Painel inferior */}
+      {/* Painel de Meus Livros */}
       <Animated.View
         style={[styles.myBooksContainer, {height: heightInterpolate}]}>
         <Text style={styles.sectionTitle}>Meus livros</Text>
@@ -97,12 +100,12 @@ const Arrivals = () => {
               data={myBooks.slice(1)}
               keyExtractor={(item, index) => index.toString()}
               numColumns={2}
-              contentContainerStyle={styles.extraBooksContainer}
               columnWrapperStyle={{
                 justifyContent: 'space-between',
                 paddingHorizontal: 10,
               }}
               renderItem={({item}) => <BookCard data={item} />}
+              contentContainerStyle={{paddingBottom: 100}}
             />
           </SafeAreaView>
         )}
@@ -113,7 +116,7 @@ const Arrivals = () => {
   );
 };
 
-// ========== COMPONENTES ==========
+// =================== COMPONENTES ===================
 const BookCard = ({data}) => (
   <View style={styles.card}>
     <Image source={{uri: data.image}} style={styles.image} />
@@ -143,7 +146,7 @@ const MyBookCard = ({data}) => (
   </View>
 );
 
-// ========== ESTILOS ==========
+// =================== ESTILOS ===================
 const styles = StyleSheet.create({
   screen: {backgroundColor: '#f1f0ee', flex: 1},
   container: {padding: 8},
@@ -153,12 +156,13 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
   },
-  newsStyle: {fontSize: 28, fontWeight: 'bold', color: '#111111'},
+  newsStyle: {fontSize: 28, fontWeight: 'bold', color: '#111'},
   moreStyle: {fontSize: 20, fontWeight: '400', color: '#f08c13'},
   image: {height: 180, width: 120, borderRadius: 8, marginBottom: 8},
   card: {width: 140, alignItems: 'center'},
-  title: {fontSize: 20, fontWeight: '800', color: 'black'},
-  author: {fontSize: 16, color: '#555'},
+  books: {padding: 10},
+  title: {fontSize: 18, fontWeight: '700', color: 'black', textAlign: 'center'},
+  author: {fontSize: 14, color: '#555', textAlign: 'center'},
   myBooksContainer: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
@@ -169,12 +173,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    overflow: 'hidden',
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111',
     marginBottom: 10,
+    marginTop: 10,
   },
   holder: {
     alignSelf: 'center',
@@ -184,7 +190,6 @@ const styles = StyleSheet.create({
     height: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
   },
   holderLine: {width: 50, height: 10, borderRadius: 5, backgroundColor: '#ccc'},
   mainBookCard: {flexDirection: 'row', alignItems: 'center', marginBottom: 20},
@@ -197,9 +202,9 @@ const styles = StyleSheet.create({
     height: 5,
     backgroundColor: '#e0e0e0',
     borderRadius: 3,
+    overflow: 'hidden',
   },
   progressBar: {height: '100%', backgroundColor: '#f08c13'},
-  extraBooksContainer: {paddingBottom: 100},
 });
 
 export default Arrivals;

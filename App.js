@@ -14,6 +14,7 @@ import CreateAccount from './src/components/createAccount/CreateAccount';
 import {DadosProvider} from './src/components/contextData/contextData';
 import Search from './src/components/search/Search';
 import Library from './src/components/libraryBooks/Library';
+import NewBooks from './src/components/newBooks/newBooks';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +54,11 @@ class App extends Component {
                 name="Library"
                 component={Library}
                 options={{title: 'Library'}}
+              />
+              <Stack.Screen
+                name="NewBooks"
+                component={NewBooks}
+                options={{title: 'Novos Livros'}}
               />
             </Stack.Navigator>
           </NavigationContainer>
