@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <View style={styles.footerContainer}>
       <TouchableOpacity style={styles.tab}>
-        <Icon name="home-outline" size={24} color="#f1f0ee" />
+        <Icon name="home" size={24} color="#f1f0ee" />
         <Text style={styles.tabText}>Home</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.tab}>

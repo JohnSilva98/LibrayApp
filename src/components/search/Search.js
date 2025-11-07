@@ -1,13 +1,12 @@
 import React, {useState, useContext} from 'react';
 import {View, TextInput, FlatList, Text, Image} from 'react-native';
-// import {DadosContext} from '../../context/DadosContext';
+// import data from '..contextData/contextData';
 
 const Search = () => {
-  const {books} = useContext(DadosContext);
   const [searchText, setSearchText] = useState('');
 
   // Função para filtrar livros pelo título ou autor com base no searchText
-  const filteredBooks = books.filter(
+  const filteredBooks = data.filter(
     book =>
       book.title.toLowerCase().includes(searchText.toLowerCase()) ||
       book.author.toLowerCase().includes(searchText.toLowerCase()),

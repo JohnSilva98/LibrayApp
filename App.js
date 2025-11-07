@@ -11,37 +11,41 @@ import HomeScreen from './src/components/homeScreen/HomeScreen';
 import Splash from './src/components/splashScreen/splash';
 import LoginScreen from './src/components/login/LoginScreen';
 import CreateAccount from './src/components/createAccount/CreateAccount';
+import DadosContext from './src/components/contextData/contextData';
 
 const Stack = createNativeStackNavigator();
 
 class App extends Component {
   render() {
+    const sharedValue = {DadosProvider: DadosContext};
     return (
       <>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Splash">
-            <Stack.Screen
-              name="Splash"
-              component={Splash}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="LoginScreen"
-              component={LoginScreen}
-              options={{title: 'Login'}}
-            />
-            <Stack.Screen
-              name="CreateAccount"
-              component={CreateAccount}
-              options={{title: 'Criar Conta'}}
-            />
-            <Stack.Screen
-              name="HomeScreen"
-              component={HomeScreen}
-              options={{title: 'Home'}}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <DadosContext.Provider value={sharedValue}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Splash">
+              <Stack.Screen
+                name="Splash"
+                component={Splash}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{title: 'Login'}}
+              />
+              <Stack.Screen
+                name="CreateAccount"
+                component={CreateAccount}
+                options={{title: 'Criar Conta'}}
+              />
+              <Stack.Screen
+                name="HomeScreen"
+                component={HomeScreen}
+                options={{title: 'Home'}}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </DadosContext.Provider>
       </>
     );
   }
