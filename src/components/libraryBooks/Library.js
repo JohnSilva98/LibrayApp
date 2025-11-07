@@ -9,17 +9,21 @@ import {
   SafeAreaView,
 } from 'react-native';
 import DadosContext from '../contextData/contextData';
+import {useNavigation} from '@react-navigation/native';
 import Footer from '../footer/Footer';
 
 const BooksScreen = () => {
   const {books} = useContext(DadosContext);
+  const navigation = useNavigation();
 
   const renderBook = ({item}) => (
     <View style={styles.bookCard}>
       <Image source={{uri: item.image}} style={styles.bookImage} />
       <Text style={styles.bookTitle}>{item.title}</Text>
       <Text style={styles.bookAuthor}>{item.author}</Text>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('BookDetails', {book: item})}>
         <Text style={styles.buttonText}>Ver detalhes</Text>
       </TouchableOpacity>
     </View>
