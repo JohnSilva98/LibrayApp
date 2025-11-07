@@ -31,8 +31,8 @@ const Search = () => {
             <View style={styles.filteredBooks}>
               <Image source={{uri: item.image}} style={styles.bookImage} />
               <View style={styles.bookDetails}>
-                <Text style={{fontWeight: 'bold'}}>{item.title}</Text>
-                <Text>{item.author}</Text>
+                <Text style={styles.bookTitle}>{item.title}</Text>
+                <Text style={styles.bookAuthor}>{item.author}</Text>
               </View>
             </View>
           )}
@@ -60,15 +60,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bookImage: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
+    width: 70,
+    height: 70,
+    marginLeft: 10,
   },
   bookDetails: {
     flex: 1,
     justifyContent: 'center',
     paddingLeft: 10,
     color: '#000',
+  },
+  bookTitle: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#000',
+  },
+  bookAuthor: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 export default Search;
