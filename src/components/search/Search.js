@@ -23,19 +23,22 @@ const Search = () => {
         onChangeText={setSearchText}
         style={styles.input}
       />
-      <FlatList
-        data={filteredBooks}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item}) => (
-          <View style={styles.filteredBooks}>
-            <Image source={{uri: item.image}} style={styles.bookImage} />
-            <View style={styles.bookDetails}>
-              <Text style={{fontWeight: 'bold'}}>{item.title}</Text>
-              <Text>{item.author}</Text>
+      {searchText.length > 0 && (
+        <FlatList
+          data={filteredBooks}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => (
+            <View style={styles.filteredBooks}>
+              <Image source={{uri: item.image}} style={styles.bookImage} />
+              <View style={styles.bookDetails}>
+                <Text style={{fontWeight: 'bold'}}>{item.title}</Text>
+                <Text>{item.author}</Text>
+              </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
+
       <Footer />
     </View>
   );
