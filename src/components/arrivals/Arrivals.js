@@ -161,24 +161,27 @@ class Arrivals extends Component {
         {/* Painel de Meus Livros com drag em toda a área */}
         <Animated.View
           style={[styles.myBooksContainer, {height: heightInterpolate}]}
-          {...this.panResponder.panHandlers} // <- drag aplicado aqui
+          // <- drag aplicado aqui
         >
           <Text style={styles.sectionTitle}>Meus livros</Text>
 
-          <View style={styles.holder}>
+          <View style={styles.holder} {...this.panResponder.panHandlers}>
             <View style={styles.holderLine} />
           </View>
 
           {this.state.myBooks[0] && <MyBookCard data={this.state.myBooks[0]} />}
 
           {this.state.expanded && this.state.myBooks.length > 1 && (
-            <FlatList
-              data={this.state.myBooks.slice(1)}
-              keyExtractor={(item, index) => index.toString()}
-              numColumns={2} // 4 itens por linha
-              contentContainerStyle={styles.extraBooksContainer}
-              renderItem={({item}) => <Books data={item} />}
-            />
+            <View style={{flex: 1}}>
+              <FlatList
+                data={this.state.myBooks.slice(1)}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={2} // 4 itens por linha
+                contentContainerStyle={styles.extraBooksContainer}
+                style={{flex: 1}}
+                renderItem={({item}) => <Books data={item} />}
+              />
+            </View>
           )}
         </Animated.View>
 
@@ -255,6 +258,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    flex: 1,
+    overflow: 'hidden',
   },
   sectionTitle: {
     fontSize: 24,
@@ -263,8 +268,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
   },
-  holder: {alignSelf: 'center', marginBottom: 20, paddingVertical: 5},
-  holderLine: {width: 40, height: 5, borderRadius: 3, backgroundColor: '#ccc'},
+  holder: {
+    alignSelf: 'center',
+    marginBottom: 20,
+    paddingVertical: 5,
+    width: '100%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  holderLine: {width: 50, height: 10, borderRadius: 5, backgroundColor: '#ccc'},
   mainBookCard: {flexDirection: 'row', alignItems: 'center', marginBottom: 20},
   myBookImage: {width: 80, height: 120, borderRadius: 8},
   bookInfo: {marginLeft: 20, flex: 1},
