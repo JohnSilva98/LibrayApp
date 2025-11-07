@@ -178,7 +178,7 @@ class Arrivals extends Component {
                 keyExtractor={(item, index) => index.toString()}
                 numColumns={2} // 4 itens por linha
                 contentContainerStyle={styles.extraBooksContainer}
-                style={{flex: 1}}
+                style={{flex: 1, flexGrow: 1}}
                 renderItem={({item}) => <Books data={item} />}
               />
             </View>
@@ -270,10 +270,11 @@ const styles = StyleSheet.create({
   },
   holder: {
     alignSelf: 'center',
-    marginBottom: 20,
+    backgroundColor: 'transparent',
+    marginBottom: 10,
     paddingVertical: 5,
     width: '100%',
-    height: 50,
+    height: 60,
     alignItems: 'center',
     justifyContent: 'center',
   },
