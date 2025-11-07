@@ -22,35 +22,40 @@ const Arrivals = () => {
 
   const newBooks = books.filter(book => book.isNew).slice(0, 8);
 
-  // ANIMAÇÃO DO PAINEL
   const [expanded, setExpanded] = useState(false);
   const minHeight = 350;
   const maxHeight = 700;
+
   const expandAnim = useRef(new Animated.Value(0)).current;
 
   const panResponder = useRef(
     PanResponder.create({
-      // Do not activate pan responder on start to allow taps
-      onStartShouldSetPanResponder: () => false,
-      // Capture move events with low threshold
+      onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, gestureState) =>
         Math.abs(gestureState.dy) > 5,
       onMoveShouldSetPanResponderCapture: (_, gestureState) =>
         Math.abs(gestureState.dy) > 5,
+
       onPanResponderGrant: () => {
-        // On gesture start, set offset to current animated value for continuity
+        // Set offset for smooth drag continuation
         expandAnim.setOffset(expandAnim._value || 0);
         expandAnim.setValue(0);
       },
-      onPanResponderMove: (_, gestureState) => {
-        let newHeight = expanded
-          ? maxHeight - gestureState.dy
-          : minHeight - gestureState.dy;
-        newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
-        expandAnim.setValue((newHeight - minHeight) / (maxHeight - minHeight));
-      },
+
+      onPanResponderMove: Animated.event([null, {dy: expandAnim}], {
+        useNativeDriver: false,
+        listener: (_, gestureState) => {
+          let animatedValue =
+            (expandAnim._offset || 0) -
+            gestureState.dy / (maxHeight - minHeight);
+          animatedValue = Math.max(0, Math.min(1, animatedValue));
+          expandAnim.setValue(animatedValue);
+        },
+      }),
 
       onPanResponderRelease: (_, gestureState) => {
+        expandAnim.flattenOffset();
+
         const dragDistance = gestureState.dy;
         const dragVelocity = gestureState.vy;
         const swipeDown = dragDistance > 40 || dragVelocity > 0.4;
@@ -59,21 +64,14 @@ const Arrivals = () => {
         let shouldExpand = expanded;
         if (expanded && swipeDown) shouldExpand = false;
         else if (!expanded && swipeUp) shouldExpand = true;
-        else {
-          const current = expandAnim.__getValue
-            ? expandAnim.__getValue()
-            : null;
-          if (current !== null) shouldExpand = current > 0.5;
-        }
+        else shouldExpand = expandAnim._value > 0.5;
 
         Animated.spring(expandAnim, {
           toValue: shouldExpand ? 1 : 0,
           speed: 10,
           bounciness: 6,
           useNativeDriver: false,
-        }).start();
-
-        setExpanded(shouldExpand);
+        }).start(() => setExpanded(shouldExpand));
       },
     }),
   ).current;
@@ -83,7 +81,6 @@ const Arrivals = () => {
     outputRange: [minHeight, maxHeight],
   });
 
-  // Render
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
@@ -108,13 +105,11 @@ const Arrivals = () => {
         </View>
       </View>
 
-      {/* Painel de Meus Livros */}
       <Animated.View
         style={[styles.myBooksContainer, {height: heightInterpolate}]}
         pointerEvents="box-none">
         <Text style={styles.sectionTitle}>Meus livros</Text>
 
-        {/* PanHandlers directly on TouchableOpacity for better gesture handling */}
         <TouchableOpacity
           style={styles.holder}
           activeOpacity={0.8}
@@ -123,11 +118,10 @@ const Arrivals = () => {
             const target = expanded ? 0 : 1;
             Animated.spring(expandAnim, {
               toValue: target,
-              speed: 8,
-              bounciness: 12,
+              speed: 12,
+              bounciness: 8,
               useNativeDriver: false,
-            }).start();
-            setExpanded(!expanded);
+            }).start(() => setExpanded(!expanded));
           }}>
           <View style={styles.holderLine} />
         </TouchableOpacity>
@@ -156,7 +150,6 @@ const Arrivals = () => {
   );
 };
 
-// COMPONENTES
 const BookCard = ({data}) => (
   <View style={styles.card}>
     <Image source={{uri: data.image}} style={styles.image} />
@@ -186,7 +179,6 @@ const MyBookCard = ({data}) => (
   </View>
 );
 
-// ESTILOS
 const styles = StyleSheet.create({
   screen: {backgroundColor: '#f1f0ee', flex: 1},
   container: {padding: 8},
