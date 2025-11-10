@@ -20,6 +20,7 @@ import Profile from './src/components/profilePage/profile';
 import Cart from './src/components/cart/Cart';
 import rentedBooks from './src/components/profilePage/rentedBooks';
 import RentalHistory from './src/components/rentalHistory/RentalHistory';
+
 const Stack = createNativeStackNavigator();
 
 class App extends Component {
