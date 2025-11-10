@@ -16,6 +16,7 @@ import Search from './src/components/search/Search';
 import Library from './src/components/libraryBooks/Library';
 import NewBooks from './src/components/newBooks/newBooks';
 import bookDetails from './src/components/bookDetails/BookDetails';
+import Cart from './src/components/cart/Cart';
 const Stack = createNativeStackNavigator();
 
 class App extends Component {
@@ -64,6 +65,11 @@ class App extends Component {
                 name="BookDetails"
                 component={bookDetails}
                 options={{title: 'Detalhes do Livro'}}
+              />
+              <Stack.Screen
+                name="Cart"
+                component={Cart}
+                options={{title: 'Carrinho'}}
               />
             </Stack.Navigator>
           </NavigationContainer>
