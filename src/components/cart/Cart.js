@@ -108,6 +108,8 @@ const styles = StyleSheet.create({
   confirmButton: {
     flexDirection: 'row',
     backgroundColor: '#28a745',
+    width: '50%',
+    alignSelf: 'center',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
