@@ -16,6 +16,7 @@ import Footer from '../footer/Footer';
 import {DadosContext} from '../contextData/contextData';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MyBooksExpandable from '../myBooks/myBooksExpand';
 
 const Arrivals = () => {
   const {books, myBooks} = useContext(DadosContext);
@@ -114,60 +115,7 @@ const Arrivals = () => {
         </View>
       </View>
 
-      <Animated.View
-        style={[styles.myBooksContainer, {height: heightInterpolate}]}
-        pointerEvents="box-none">
-        {/* Header com título e seta animada */}
-        <View style={styles.holderHeader}>
-          <Text style={styles.sectionTitle}>Meus livros</Text>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => {
-              const target = expanded ? 0 : 1;
-              Animated.spring(expandAnim, {
-                toValue: target,
-                speed: 12,
-                bounciness: 8,
-                useNativeDriver: false,
-              }).start(() => setExpanded(!expanded));
-            }}>
-            <Animated.View
-              style={{
-                transform: [
-                  {
-                    rotate: expandAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0deg', '180deg'],
-                    }),
-                  },
-                ],
-              }}>
-              <Icon name="chevron-up" size={30} color="#111" />
-            </Animated.View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Primeiro livro */}
-        {myBooks[0] && <MyBookCard data={myBooks[0]} />}
-
-        {/* Restante dos livros, só aparece quando expandido */}
-        {expanded && myBooks.length > 1 && (
-          <FlatList
-            data={myBooks.slice(1)}
-            keyExtractor={(item, index) =>
-              item.id?.toString() ?? index.toString()
-            }
-            numColumns={2}
-            columnWrapperStyle={{
-              justifyContent: 'space-between',
-              paddingHorizontal: 10,
-            }}
-            renderItem={({item}) => <BookCard data={item} />}
-            contentContainerStyle={{paddingBottom: 120}}
-          />
-        )}
-      </Animated.View>
+      <MyBooksExpandable myBooks={myBooks} />
 
       <Footer />
     </View>
