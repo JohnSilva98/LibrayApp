@@ -52,17 +52,17 @@ class App extends Component {
               <Stack.Screen
                 name="Search"
                 component={Search}
-                options={{title: 'Search'}}
+                options={{title: 'Buscar'}}
               />
               <Stack.Screen
                 name="Library"
                 component={Library}
-                options={{title: 'Library'}}
+                options={{title: 'Biblioteca'}}
               />
               <Stack.Screen
                 name="NewBooks"
                 component={NewBooks}
-                options={{title: 'Novos Livros'}}
+                options={{title: ''}}
               />
               <Stack.Screen
                 name="BookDetails"
@@ -72,22 +72,22 @@ class App extends Component {
               <Stack.Screen
                 name="Cart"
                 component={Cart}
-                options={{title: 'Carrinho'}}
+                options={{title: ''}}
               />
               <Stack.Screen
                 name="Profile"
                 component={Profile}
-                options={{title: 'Perfil'}}
+                options={{title: ''}}
               />
               <Stack.Screen
                 name="rentedBooks"
                 component={rentedBooks}
-                options={{title: 'Meus Livros Alugados'}}
+                options={{title: ''}}
               />
               <Stack.Screen
                 name="RentalHistory"
                 component={RentalHistory}
-                options={{title: 'Histórico de Aluguéis'}}
+                options={{title: ''}}
               />
             </Stack.Navigator>
           </NavigationContainer>
