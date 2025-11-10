@@ -10,10 +10,20 @@ import {
 import Footer from '../footer/Footer';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {DadosContext} from '../contextData/contextData';
 
 const BookDetails = () => {
   const route = useRoute();
   const {book} = route.params; // pegamos o livro passado via navegação
+  const navigation = useNavigation();
+  const {rentBook, isBookRented} = React.useContext(DadosContext); // usar as funções do contexto
+  const rented = isBookRented(book.id); // verificar se o livro já está alugado
+
+  const handleRentBook = () => {
+    if (!rented) {
+      rentBook(book); // adiciona à lista de alugados
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,9 +36,14 @@ const BookDetails = () => {
       <Text style={styles.genre}>Gênero: {book.genre}</Text>
       {/* adicionando o botão de alugar livro */}
       <View style={styles.rentButtonView}>
-        <TouchableOpacity style={styles.rntButton}>
+        <TouchableOpacity
+          style={[styles.rntButton, rented && {backgroundColor: '#999'}]}
+          onPress={handleRentBook}
+          disabled={rented}>
           <Icon name="book" size={20} color="#fff" />
-          <Text style={{color: '#fff', marginLeft: 8}}>Alugar Livro</Text>
+          <Text style={{color: '#fff', marginLeft: 8}}>
+            {rented ? 'Já Alugado' : 'Alugar Livro'}
+          </Text>
         </TouchableOpacity>
       </View>
 
