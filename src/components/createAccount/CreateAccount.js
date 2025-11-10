@@ -52,7 +52,7 @@ function CreateAccount() {
     if (Object.keys(eobj).length === 0) {
       console.log('Validação bem-sucedida! Tentando navegar...'); // ⬅️ Adicione este log
       setSubmitted(true);
-      navigation.navigate('HomeScreen'); // nome do seu destino na navegação
+      navigation.navigate('LoginScreen'); // nome do seu destino na navegação
     } else {
       console.log('Validação falhou. Erros:', eobj); // ⬅️ E este log
       setSubmitted(false);
