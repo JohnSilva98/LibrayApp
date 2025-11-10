@@ -7,7 +7,7 @@ import {DadosContext} from '../contextData/contextData'; // ✅ importa o contex
 const Footer = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {rentedBooks} = useContext(DadosContext); // ✅ pega os livros alugados
+  const {cart} = useContext(DadosContext);
 
   const tabs = [
     {
@@ -55,9 +55,9 @@ const Footer = () => {
               />
 
               {/* ✅ Mostra o badge de quantidade no carrinho */}
-              {isCart && rentedBooks.length > 0 && (
+              {isCart && cart.length > 0 && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{rentedBooks.length}</Text>
+                  <Text style={styles.cartBadge}>{cart.length}</Text>
                 </View>
               )}
             </View>

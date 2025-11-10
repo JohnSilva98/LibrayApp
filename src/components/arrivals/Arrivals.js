@@ -88,6 +88,7 @@ const Arrivals = () => {
   });
 
   return (
+    // sessão livros novos
     <View style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.textNews}>
@@ -115,7 +116,7 @@ const Arrivals = () => {
         </View>
       </View>
 
-      <MyBooksExpandable myBooks={myBooks} />
+      <MyBooksExpandable myBooks={myBooks} navigation={navigation} />
 
       <Footer />
     </View>
@@ -127,27 +128,6 @@ const BookCard = ({data}) => (
     <Image source={{uri: data.image}} style={styles.image} />
     <Text style={styles.title}>{data.title}</Text>
     <Text style={styles.author}>{data.author}</Text>
-  </View>
-);
-
-const MyBookCard = ({data}) => (
-  <View style={styles.mainBookCard}>
-    <Image source={{uri: data.image}} style={styles.myBookImage} />
-    <View style={styles.bookInfo}>
-      <Text style={styles.mainTitle}>{data.title}</Text>
-      <Text style={styles.mainAuthor}>{data.author}</Text>
-      {data.returnDate && (
-        <Text style={styles.returnDate}>{data.returnDate}</Text>
-      )}
-      <View style={styles.progressBarContainer}>
-        <View
-          style={[
-            styles.progressBar,
-            {width: `${(data.progress ?? 0) * 100}%`},
-          ]}
-        />
-      </View>
-    </View>
   </View>
 );
 

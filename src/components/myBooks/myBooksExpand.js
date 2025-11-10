@@ -10,9 +10,12 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const MyBooksExpandable = ({myBooks}) => {
+const MyBooksExpandable = ({myBooks, navigation}) => {
   const [expanded, setExpanded] = useState(false);
   const expandAnim = useRef(new Animated.Value(0)).current;
+  const handleBookPress = book => {
+    navigation.navigate('BookDetails', {book});
+  };
 
   const toggleExpand = () => {
     Animated.spring(expandAnim, {
@@ -60,14 +63,37 @@ const MyBooksExpandable = ({myBooks}) => {
             justifyContent: 'space-between',
             paddingHorizontal: 10,
           }}
-          renderItem={({item}) => <BookCard data={item} />}
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={() => handleBookPress(item)}>
+              <BookCard data={item} />
+            </TouchableOpacity>
+          )}
           contentContainerStyle={{paddingBottom: 120}}
         />
       )}
     </Animated.View>
   );
 };
-
+const MyBookCard = ({data}) => (
+  <View style={styles.mainBookCard}>
+    <Image source={{uri: data.image}} style={styles.myBookImage} />
+    <View style={styles.bookInfo}>
+      <Text style={styles.mainTitle}>{data.title}</Text>
+      <Text style={styles.mainAuthor}>{data.author}</Text>
+      {data.returnDate && (
+        <Text style={styles.returnDate}>{data.returnDate}</Text>
+      )}
+      <View style={styles.progressBarContainer}>
+        <View
+          style={[
+            styles.progressBar,
+            {width: `${(data.progress ?? 0) * 100}%`},
+          ]}
+        />
+      </View>
+    </View>
+  </View>
+);
 const BookCard = ({data}) => (
   <View style={styles.card}>
     <Image source={{uri: data.image}} style={styles.image} />

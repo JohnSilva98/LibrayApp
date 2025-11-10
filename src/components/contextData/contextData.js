@@ -495,60 +495,72 @@ export const DadosProvider = ({children}) => {
       genre: 'Ficção',
     },
   ]);
+  const [cart, setCart] = useState([]);
 
-  // Seus livros pessoais (por exemplo, já alugados anteriormente)
-  const [myBooks, setMyBooks] = useState([
-    {
-      title: 'Just My Type',
-      author: 'Simon Garfield',
-      image: 'https://i.imgur.com/j0j8j8P.png',
-      returnDate: 'Return until 25.03.2020',
-      progress: 0.7,
-    },
-    {
-      title: 'Life Lessons',
-      author: 'Jane Smith',
-      image: 'https://i.imgur.com/DvpvklR.png',
-    },
-    {
-      title: 'The Explorer',
-      author: 'Carl Sagan',
-      image: 'https://i.imgur.com/DvpvklR.png',
-    },
-  ]);
+  // Seus livros alugados atualmente
+  const [myBooks, setMyBooks] = useState([]);
 
-  // 🔥 Novo estado para livros alugados
+  // 🔥 Novo estado para livros alugados (histórico completo)
   const [rentedBooks, setRentedBooks] = useState([]);
 
-  // 👉 Alugar um livro (adiciona no carrinho)
-  const rentBook = book => {
-    const alreadyRented = rentedBooks.find(b => b.id === book.id);
-    if (!alreadyRented) {
-      setRentedBooks([...rentedBooks, book]);
-    }
+  // 👉 Adicionar ao carrinho (evita duplicados)
+  const addToCart = book => {
+    setCart(prev =>
+      prev.find(b => b.id === book.id) ? prev : [...prev, book],
+    );
   };
 
-  // 👉 Verificar se um livro já está alugado
+  // 🗑️ Remover livro do carrinho
+  const removeFromCart = bookId => {
+    setCart(cart.filter(b => b.id !== bookId));
+  };
+  // ✅ Verificar se um livro já foi alugado
   const isBookRented = bookId => {
-    return rentedBooks.some(b => b.id === bookId);
+    return myBooks.some(b => b.id === bookId && !b.returned);
   };
 
-  // 👉 (Opcional) Devolver um livro
-  const returnBook = bookId => {
-    setRentedBooks(rentedBooks.filter(b => b.id !== bookId));
+  // ✅ Finalizar aluguel (transforma carrinho em histórico)
+  const confirmRent = () => {
+    const today = new Date();
+    const returnDate = new Date();
+    returnDate.setDate(today.getDate() + 7); // 7 dias de aluguel
+
+    const rented = cart.map(book => ({
+      ...book,
+      rentDate: today.toISOString(),
+      returnDate: returnDate.toISOString(),
+      returned: false,
+      rentalId: Date.now() + Math.random(), // ID único do aluguel
+    }));
+    // Adiciona os novos livros ao histórico
+    setMyBooks(prev => [...prev, ...rented]);
+
+    // Limpa o carrinho
+    setCart([]);
   };
 
+  // 🔄 Devolver livro
+  const returnBook = rentalId => {
+    setMyBooks(prev =>
+      prev.map(b => (b.rentalId === rentalId ? {...b, returned: true} : b)),
+    );
+  };
   return (
     <DadosContext.Provider
       value={{
         books,
         setBooks,
+        cart,
+        setCart,
+        addToCart,
+        removeFromCart,
+        confirmRent,
         myBooks,
         setMyBooks,
+        returnBook,
         rentedBooks,
-        rentBook,
+        setRentedBooks,
         isBookRented,
-        returnBook, // opcional, caso queira devolver
       }}>
       {children}
     </DadosContext.Provider>

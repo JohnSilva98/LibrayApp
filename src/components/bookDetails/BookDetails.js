@@ -14,14 +14,19 @@ import {DadosContext} from '../contextData/contextData';
 
 const BookDetails = () => {
   const route = useRoute();
-  const {book} = route.params; // pegamos o livro passado via navegação
+  const {book} = route.params;
   const navigation = useNavigation();
-  const {rentBook, isBookRented} = React.useContext(DadosContext); // usar as funções do contexto
-  const rented = isBookRented(book.id); // verificar se o livro já está alugado
 
-  const handleRentBook = () => {
-    if (!rented) {
-      rentBook(book); // adiciona à lista de alugados
+  // Pega os dados do contexto
+  const {cart, myBooks, addToCart} = React.useContext(DadosContext);
+
+  // Verifica se o livro já está no carrinho ou já foi alugado
+  const isInCart = cart.some(b => b.id === book.id);
+  const isRented = myBooks.some(b => b.id === book.id && !b.returned);
+
+  const handleAddToCart = () => {
+    if (!isInCart && !isRented) {
+      addToCart(book);
     }
   };
 
@@ -30,19 +35,29 @@ const BookDetails = () => {
       <View style={styles.header}>
         <Text style={styles.title}>{book.title}</Text>
       </View>
+
       <Image source={{uri: book.image}} style={styles.image} />
+
       <Text style={styles.author}>Autor: {book.author}</Text>
       <Text style={styles.description}>{book.description}</Text>
       <Text style={styles.genre}>Gênero: {book.genre}</Text>
-      {/* adicionando o botão de alugar livro */}
+
+      {/* Botão de aluguel */}
       <View style={styles.rentButtonView}>
         <TouchableOpacity
-          style={[styles.rntButton, rented && {backgroundColor: '#999'}]}
-          onPress={handleRentBook}
-          disabled={rented}>
+          style={[
+            styles.rntButton,
+            (isInCart || isRented) && {backgroundColor: '#999'},
+          ]}
+          onPress={handleAddToCart}
+          disabled={isInCart || isRented}>
           <Icon name="book" size={20} color="#fff" />
           <Text style={{color: '#fff', marginLeft: 8}}>
-            {rented ? 'Já Alugado' : 'Alugar Livro'}
+            {isRented
+              ? 'Já Alugado'
+              : isInCart
+              ? 'No Carrinho'
+              : 'Alugar Livro'}
           </Text>
         </TouchableOpacity>
       </View>
