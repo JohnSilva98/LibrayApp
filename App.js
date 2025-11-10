@@ -16,7 +16,10 @@ import Search from './src/components/search/Search';
 import Library from './src/components/libraryBooks/Library';
 import NewBooks from './src/components/newBooks/newBooks';
 import bookDetails from './src/components/bookDetails/BookDetails';
+import Profile from './src/components/profilePage/profile';
 import Cart from './src/components/cart/Cart';
+import rentedBooks from './src/components/profilePage/rentedBooks';
+import RentalHistory from './src/components/rentalHistory/RentalHistory';
 const Stack = createNativeStackNavigator();
 
 class App extends Component {
@@ -70,6 +73,21 @@ class App extends Component {
                 name="Cart"
                 component={Cart}
                 options={{title: 'Carrinho'}}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{title: 'Perfil'}}
+              />
+              <Stack.Screen
+                name="rentedBooks"
+                component={rentedBooks}
+                options={{title: 'Meus Livros Alugados'}}
+              />
+              <Stack.Screen
+                name="RentalHistory"
+                component={RentalHistory}
+                options={{title: 'Histórico de Aluguéis'}}
               />
             </Stack.Navigator>
           </NavigationContainer>

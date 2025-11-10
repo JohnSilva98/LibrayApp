@@ -7,11 +7,11 @@ export const DadosProvider = ({children}) => {
   const [books, setBooks] = useState(booksData);
   const [cart, setCart] = useState([]);
 
-  // Seus livros alugados atualmente
+  // Livros atualmente alugados (ativos)
   const [myBooks, setMyBooks] = useState([]);
 
-  // 🔥 Novo estado para livros alugados (histórico completo)
-  const [rentedBooks, setRentedBooks] = useState([]);
+  // Histórico completo de aluguéis (ativos + devolvidos)
+  const [history, setHistory] = useState([]);
 
   // 👉 Adicionar ao carrinho (evita duplicados)
   const addToCart = book => {
@@ -22,14 +22,15 @@ export const DadosProvider = ({children}) => {
 
   // 🗑️ Remover livro do carrinho
   const removeFromCart = bookId => {
-    setCart(cart.filter(b => b.id !== bookId));
+    setCart(cart => cart.filter(b => b.id !== bookId));
   };
-  // ✅ Verificar se um livro já foi alugado
+
+  // ✅ Verificar se um livro já foi alugado e ainda não devolvido
   const isBookRented = bookId => {
     return myBooks.some(b => b.id === bookId && !b.returned);
   };
 
-  // ✅ Finalizar aluguel (transforma carrinho em histórico)
+  // ✅ Finalizar aluguel (confirma carrinho → meus livros e histórico)
   const confirmRent = () => {
     const today = new Date();
     const returnDate = new Date();
@@ -40,21 +41,38 @@ export const DadosProvider = ({children}) => {
       rentDate: today.toISOString(),
       returnDate: returnDate.toISOString(),
       returned: false,
-      rentalId: Date.now() + Math.random(), // ID único do aluguel
+      rentalId: Date.now() + Math.random(), // ID único
     }));
-    // Adiciona os novos livros ao histórico
-    setMyBooks(prev => [...prev, ...rented]);
 
-    // Limpa o carrinho
+    // adiciona aos livros atuais e ao histórico
+    setMyBooks(prev => [...prev, ...rented]);
+    setHistory(prev => [...prev, ...rented]);
+
+    // limpa o carrinho
     setCart([]);
   };
 
   // 🔄 Devolver livro
   const returnBook = rentalId => {
-    setMyBooks(prev =>
-      prev.map(b => (b.rentalId === rentalId ? {...b, returned: true} : b)),
+    // Localiza o livro devolvido
+    const returnedBook = myBooks.find(b => b.rentalId === rentalId);
+    if (!returnedBook) return;
+
+    // Atualiza lista de alugados (marca como devolvido)
+    setMyBooks(
+      prev => prev.filter(b => b.rentalId !== rentalId), // remove da tela "Meus Livros"
+    );
+
+    // Atualiza histórico: marca como devolvido
+    setHistory(prev =>
+      prev.map(b =>
+        b.rentalId === rentalId
+          ? {...b, returned: true, returnDate: new Date().toISOString()}
+          : b,
+      ),
     );
   };
+
   return (
     <DadosContext.Provider
       value={{
@@ -68,8 +86,8 @@ export const DadosProvider = ({children}) => {
         myBooks,
         setMyBooks,
         returnBook,
-        rentedBooks,
-        setRentedBooks,
+        history,
+        setHistory,
         isBookRented,
       }}>
       {children}

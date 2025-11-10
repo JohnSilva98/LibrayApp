@@ -1,51 +1,52 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import React from 'react';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
-const hoje = new Date();
+const Header = () => {
+  const navigation = useNavigation();
 
-// Nome do dia da semana (qui, sex, etc)
-const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const hoje = new Date();
+  const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const meses = [
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez',
+  ];
 
-const meses = [
-  'Jan',
-  'Fev',
-  'Mar',
-  'Abr',
-  'Mai',
-  'Jun',
-  'Jul',
-  'Ago',
-  'Set',
-  'Out',
-  'Nov',
-  'Dez',
-];
+  const dia = hoje.getDate();
+  const diaSemana = diasSemana[hoje.getDay()];
+  const mesAno = `${meses[hoje.getMonth()]} ${hoje.getFullYear()}`;
 
-const dia = hoje.getDate();
-const diaSemana = diasSemana[hoje.getDay()];
-const mesAno = `${meses[hoje.getMonth()]} ${hoje.getFullYear()}`;
-
-class Header extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.dataContainer}>
-          <Text style={styles.dia}>{dia}</Text>
-          <View style={styles.sub}>
-            <Text style={styles.diaSemana}>{diaSemana}</Text>
-            <Text style={styles.mesAno}>{mesAno}</Text>
-          </View>
+  return (
+    <View style={styles.container}>
+      <View style={styles.dataContainer}>
+        <Text style={styles.dia}>{dia}</Text>
+        <View style={styles.sub}>
+          <Text style={styles.diaSemana}>{diaSemana}</Text>
+          <Text style={styles.mesAno}>{mesAno}</Text>
         </View>
+      </View>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
         <Image
           style={styles.profilePhoto}
           source={{
-            uri: 'https://images.unsplash.com/photo-1755380549803-c6ab36193884?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            uri: 'https://images.unsplash.com/photo-1755380549803-c6ab36193884?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0',
           }}
         />
-      </View>
-    );
-  }
-}
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
