@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useContext} from 'react'; // ✅ adiciona useContext
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {DadosContext} from '../contextData/contextData'; // ✅ importa o contexto
 
 const Footer = () => {
   const navigation = useNavigation();
-  const route = useRoute(); // <- identifica tela atual
+  const route = useRoute();
+  const {rentedBooks} = useContext(DadosContext); // ✅ pega os livros alugados
 
   const tabs = [
     {
@@ -26,23 +28,40 @@ const Footer = () => {
       icon: 'book-outline',
       activeIcon: 'book',
     },
-    {name: 'Cart', label: 'Cart', icon: 'cart-outline', activeIcon: 'cart'},
+    {
+      name: 'Cart',
+      label: 'Cart',
+      icon: 'cart-outline',
+      activeIcon: 'cart',
+    },
   ];
 
   return (
     <View style={styles.footerContainer}>
       {tabs.map(tab => {
         const isActive = route.name === tab.name;
+        const isCart = tab.name === 'Cart'; // ✅ identifica o botão de carrinho
+
         return (
           <TouchableOpacity
             key={tab.name}
             style={styles.tab}
             onPress={() => navigation.navigate(tab.name)}>
-            <Icon
-              name={isActive ? tab.activeIcon : tab.icon}
-              size={isActive ? 30 : 24} // 👈 aumenta tamanho do ativo
-              color={isActive ? '#ffc107' : '#f1f0ee'} // 👈 muda cor
-            />
+            <View style={{position: 'relative'}}>
+              <Icon
+                name={isActive ? tab.activeIcon : tab.icon}
+                size={isActive ? 30 : 24}
+                color={isActive ? '#ffc107' : '#f1f0ee'}
+              />
+
+              {/* ✅ Mostra o badge de quantidade no carrinho */}
+              {isCart && rentedBooks.length > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{rentedBooks.length}</Text>
+                </View>
+              )}
+            </View>
+
             <Text
               style={[
                 styles.tabText,
@@ -79,6 +98,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
     color: '#f1f0ee',
+  },
+  // ✅ estilos do badge
+  badge: {
+    position: 'absolute',
+    right: -10,
+    top: -6,
+    backgroundColor: '#f08c13',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
 });
 
