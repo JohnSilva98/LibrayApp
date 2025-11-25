@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "TB_USUARIO")
 public class Usuario {
@@ -13,12 +15,15 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String nome, String email, String senha, List<Aluguel> alugueis) {
+    public Usuario(Long id, String nome, String email, String senha, String dataNascimento, String telefone, List<Aluguel> alugueis) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.dataNascimento = dataNascimento;
+        this.telefone = telefone;
         this.alugueis = alugueis;
+
     }
 
     @Id
@@ -31,6 +36,10 @@ public class Usuario {
     private String email;
 
     private String senha;
+
+    private String dataNascimento;
+
+    private String telefone;
 
     @OneToMany(mappedBy = "usuario")
     private List<Aluguel> alugueis;
@@ -66,12 +75,23 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-
+    
     public List<Aluguel> getAlugueis() {
         return alugueis;
     }
 
     public void setAlugueis(List<Aluguel> alugueis) {
         this.alugueis = alugueis;
+    
+    }
+    public String getDataNascimento() {
+        return dataNascimento;
+    }
+    public void setDataNascimento(String dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public void setTelefone(String telefone) {
+      this.telefone = telefone;
     }
 }

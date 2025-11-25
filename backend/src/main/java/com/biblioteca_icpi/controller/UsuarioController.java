@@ -6,12 +6,15 @@ import com.biblioteca_icpi.model.Aluguel;
 import com.biblioteca_icpi.model.Usuario;
 import com.biblioteca_icpi.service.UsuarioService;
 import jakarta.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -21,8 +24,9 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public Usuario cadastrar (@Valid @RequestBody CadastrarUsuarioDTO dto) {
-        return usuarioService.criarUsuario(dto);
+    public ResponseEntity<Usuario> cadastrar (@Valid @RequestBody CadastrarUsuarioDTO dto) {
+        Usuario usuarioCriado = usuarioService.criarUsuario(dto);
+        return ResponseEntity.ok(usuarioCriado);
     }
 
     @PutMapping("/{id}")
@@ -37,7 +41,7 @@ public class UsuarioController {
 
 
     @GetMapping("/{id}")
-    public Usuario consultarUsuario (@PathVariable Long idUsuario) {
+    public Usuario consultarUsuario (@PathVariable("id") Long idUsuario) {
         return usuarioService.buscarUsuarioNoBanco(idUsuario);
     }
 

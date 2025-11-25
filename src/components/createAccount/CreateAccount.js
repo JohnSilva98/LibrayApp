@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import axios from 'axios';
 import {
   View,
   Text,
@@ -22,6 +23,8 @@ function CreateAccount() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const data = form.dob.split('/'); // ["31","12","1999"]
+  const dataFormatada = `${data[2]}-${data[1]}-${data[0]}`;
 
   const validate = () => {
     const e = {};
@@ -42,16 +45,38 @@ function CreateAccount() {
     setErrors(err => ({...err, [name]: undefined}));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const eobj = validate();
     setErrors(eobj);
-    if (Object.keys(eobj).length === 0) {
-      console.log('Validação bem-sucedida! Tentando navegar...'); // ⬅️ Adicione este log
-      setSubmitted(true);
-      navigation.navigate('LoginScreen'); // nome do seu destino na navegação
-    } else {
-      console.log('Validação falhou. Erros:', eobj); // ⬅️ E este log
+
+    if (Object.keys(eobj).length !== 0) {
       setSubmitted(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'http://10.215.36.185:8080/usuarios',
+        {
+          nome: form.firstName,
+          dataNascimento: dataFormatada,
+          telefone: form.phone,
+          email: form.email,
+          senha: form.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      console.log('Usuário criado com sucesso:', response.data);
+      setSubmitted(true);
+      navigation.navigate('LoginScreen');
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      alert('Erro ao criar usuário');
     }
   };
 
