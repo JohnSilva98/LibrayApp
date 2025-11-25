@@ -14,9 +14,7 @@ function CreateAccount() {
   const navigation = useNavigation();
   const [form, setForm] = useState({
     firstName: '',
-    lastName: '',
     dob: '',
-    gender: '',
     phone: '',
     email: '',
     password: '',
@@ -28,9 +26,7 @@ function CreateAccount() {
   const validate = () => {
     const e = {};
     if (!form.firstName.trim()) e.firstName = 'Preencha o nome';
-    if (!form.lastName.trim()) e.lastName = 'Preencha o ultimo nome';
     if (!form.dob) e.dob = 'Preencha a data de nascimento';
-    // if (!form.gender) e.gender = 'Preencha o gênero';
     if (!form.phone.trim()) e.phone = 'Preencha o telefone';
     if (!form.email.trim()) e.email = 'Preencha o email';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
@@ -92,23 +88,10 @@ function CreateAccount() {
             value={form.firstName}
             onChangeText={value => handleChange('firstName', value)}
             style={styles.input}
-            placeholder="Primeiro nome"
+            placeholder="Nome"
           />
           {errors.firstName && (
             <Text style={styles.error}>{errors.firstName}</Text>
-          )}
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>Ultimo nome</Text>
-          <TextInput
-            value={form.lastName}
-            onChangeText={value => handleChange('lastName', value)}
-            style={styles.input}
-            placeholder="Ultimo nome"
-          />
-          {errors.lastName && (
-            <Text style={styles.error}>{errors.lastName}</Text>
           )}
         </View>
       </View>
@@ -123,18 +106,7 @@ function CreateAccount() {
         />
         {errors.dob && <Text style={styles.error}>{errors.dob}</Text>}
       </View>
-      {/* <View style={styles.field}>
-        <Text style={styles.label}>Genero</Text>
-        <Picker
-          selectedValue={form.gender}
-          onValueChange={value => handleChange('gender', value)}
-          style={styles.input}>
-          <Picker.Item label="Escolher" value="" />
-          <Picker.Item label="Feminino" value="female" />
-          <Picker.Item label="Masculino" value="male" />
-        </Picker>
-        {errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
-      </View> */}
+
       <View style={styles.field}>
         <Text style={styles.label}>Telefone</Text>
         <TextInput
