@@ -108,7 +108,7 @@ function CreateAccount() {
       <Text style={{fontSize: 22, marginBottom: 12}}>Criar conta / Login</Text>
       <View style={styles.row}>
         <View style={styles.field}>
-          <Text style={styles.label}>Primeiro nome</Text>
+          <Text style={styles.label}>Nome Completo</Text>
           <TextInput
             value={form.firstName}
             onChangeText={value => handleChange('firstName', value)}

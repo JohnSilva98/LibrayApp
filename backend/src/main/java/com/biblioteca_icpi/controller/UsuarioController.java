@@ -5,6 +5,8 @@ import com.biblioteca_icpi.dto.EditarUsuarioDTO;
 import com.biblioteca_icpi.model.Aluguel;
 import com.biblioteca_icpi.model.Usuario;
 import com.biblioteca_icpi.service.UsuarioService;
+import com.biblioteca_icpi.dto.LoginDTO;
+import com.biblioteca_icpi.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,11 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    private final UsuarioRepository usuarioRepository;
+
+    public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
         this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @PostMapping
@@ -28,6 +33,23 @@ public class UsuarioController {
         Usuario usuarioCriado = usuarioService.criarUsuario(dto);
         return ResponseEntity.ok(usuarioCriado);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+    Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail());
+
+
+    if (usuario == null) {
+        return ResponseEntity.status(401).body("Email não encontrado");
+    }
+
+    if (!usuario.getSenha().equals(loginDTO.getSenha())) {
+        return ResponseEntity.status(401).body("Senha incorreta");
+    }
+
+    return ResponseEntity.ok(usuario);
+}
+
 
     @PutMapping("/{id}")
     public Usuario editarUsuario (@PathVariable Long id, @Valid @RequestBody EditarUsuarioDTO dto) {
@@ -49,5 +71,7 @@ public class UsuarioController {
     public List<Usuario> consultarUsuarios () {
         return usuarioService.listarUsuarios();
     }
+
+
 
 }

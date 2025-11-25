@@ -7,22 +7,40 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-
+import axios from 'axios';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigation = useNavigation();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email.trim() || !password) {
       setError('Por favor, preencha email e senha.');
       return;
     }
 
     setError('');
-    // aqui você navega para a HomeScreen
-    navigation.navigate('HomeScreen');
+    try {
+      const response = await axios.post(
+        'http://10.215.36.185:8080/usuarios/login',
+        {
+          email: email,
+          senha: password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      console.log('Login OK:', response.data);
+      navigation.navigate('HomeScreen');
+    } catch (err) {
+      console.log('Erro no login:', err.response?.data);
+      setError('Email ou senha incorretos.');
+    }
   };
 
   return (
@@ -46,7 +64,7 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           style={styles.input}
-          placeholder="Password"
+          placeholder="Senha"
           secureTextEntry
         />
       </View>

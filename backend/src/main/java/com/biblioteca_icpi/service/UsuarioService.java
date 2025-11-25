@@ -25,8 +25,8 @@ public class UsuarioService {
     }
 
     public Usuario criarUsuario(CadastrarUsuarioDTO dto) {
-        Optional<Usuario> possivelUsuario = usuarioRepository.findByEmail(dto.getEmail());
-        if (possivelUsuario.isPresent()) {
+        Usuario possivelUsuario = usuarioRepository.findByEmail(dto.getEmail());
+        if (possivelUsuario != null) {
             throw new UsuarioJaExistenteException("Usuário já cadastrado!");
         } else {
             Usuario usuario = new Usuario();
