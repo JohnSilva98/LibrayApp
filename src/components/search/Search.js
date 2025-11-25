@@ -1,10 +1,21 @@
 import React, {useState, useContext} from 'react';
-import {View, TextInput, FlatList, Text, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  TextInput,
+  FlatList,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import Footer from '../footer/Footer';
+import BookDetails from '../bookDetails/BookDetails';
+import {useNavigation} from '@react-navigation/native';
 
 import {DadosContext} from '../contextData/contextData';
 
 const Search = () => {
+  const navigation = useNavigation();
   const [searchText, setSearchText] = useState('');
   const {books} = useContext(DadosContext);
   // Função para filtrar livros pelo título ou autor com base no searchText
@@ -30,10 +41,15 @@ const Search = () => {
           renderItem={({item}) => (
             <View style={styles.filteredBooks}>
               <Image source={{uri: item.image}} style={styles.bookImage} />
-              <View style={styles.bookDetails}>
-                <Text style={styles.bookTitle}>{item.title}</Text>
-                <Text style={styles.bookAuthor}>{item.author}</Text>
-              </View>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('BookDetails', {book: item})
+                }>
+                <View style={styles.bookDetails}>
+                  <Text style={styles.bookTitle}>{item.title}</Text>
+                  <Text style={styles.bookAuthor}>{item.author}</Text>
+                </View>
+              </TouchableOpacity>
             </View>
           )}
         />
