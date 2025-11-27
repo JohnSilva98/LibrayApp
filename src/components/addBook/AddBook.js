@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import {launchImageLibrary} from 'react-native-image-picker';
-import {SupabaseClient} from '@supabase/supabase-js';
+import {supabase} from '@supabase/supabase-js';
 import axios from 'axios';
 import Footer from '../footer/Footer';
 import {useNavigation} from '@react-navigation/native';
@@ -51,7 +51,7 @@ const AddBook = () => {
     try {
       const fileName = `books-ver/${Date.now()}.jpg`;
 
-      const {data, error} = await SupabaseClient.storage
+      const {data, error} = await supabase.storage
         .from('books-ver') // seu bucket
         .upload(fileName, Buffer.from(image.base64, 'base64'), {
           contentType: 'image/jpeg',
@@ -64,7 +64,7 @@ const AddBook = () => {
       }
 
       // retorna URL pública
-      const {data: publicUrl} = SupabaseClient.storage
+      const {data: publicUrl} = supabase.storage
         .from('books-ver')
         .getPublicUrl(fileName);
 
