@@ -20,6 +20,7 @@ import Profile from './src/components/profilePage/profile';
 import Cart from './src/components/cart/Cart';
 import rentedBooks from './src/components/profilePage/rentedBooks';
 import RentalHistory from './src/components/rentalHistory/RentalHistory';
+import AddBook from './src/components/addBook/AddBook';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +30,7 @@ class App extends Component {
       <>
         <DadosProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="Splash">
+            <Stack.Navigator initialRouteName="AddBook">
               <Stack.Screen
                 name="Splash"
                 component={Splash}
@@ -48,17 +49,17 @@ class App extends Component {
               <Stack.Screen
                 name="HomeScreen"
                 component={HomeScreen}
-                options={{title: 'Home'}}
+                options={{title: 'Home', headerBackVisible: false}}
               />
               <Stack.Screen
                 name="Search"
                 component={Search}
-                options={{title: 'Buscar'}}
+                options={{title: 'Buscar', headerBackVisible: false}}
               />
               <Stack.Screen
                 name="Library"
                 component={Library}
-                options={{title: 'Biblioteca'}}
+                options={{title: 'Biblioteca', headerBackVisible: false}}
               />
               <Stack.Screen
                 name="NewBooks"
@@ -89,6 +90,11 @@ class App extends Component {
                 name="RentalHistory"
                 component={RentalHistory}
                 options={{title: ''}}
+              />
+              <Stack.Screen
+                name="AddBook"
+                component={AddBook}
+                options={{title: 'Adicionar Livro'}}
               />
             </Stack.Navigator>
           </NavigationContainer>

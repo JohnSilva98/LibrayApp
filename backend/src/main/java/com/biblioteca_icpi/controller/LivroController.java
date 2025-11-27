@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/livros")
 public class LivroController {
 
@@ -41,6 +41,7 @@ public class LivroController {
     }
 
     @GetMapping
+    @ResponseBody
     public List<Livro> listarLivros () {
         return livroService.listarLivros();
     }
