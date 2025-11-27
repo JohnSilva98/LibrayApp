@@ -16,6 +16,8 @@ public class CadastrarLivroDTO {
     @NotBlank(message = "O gênero é obrigatório")
     private String genero;
 
+    private String capaUrl;
+
     public String getNome() {
         return nome;
     }
@@ -45,6 +47,14 @@ public class CadastrarLivroDTO {
     }
 
     public void setGenero(String genero) {
-        this.genero = genero;
+                    this.genero = genero;
+                }
+
+    public String getCapaUrl() {
+        return capaUrl;
+    }
+
+    public void setCapaUrl(String capaUrl) {
+        this.capaUrl = capaUrl;
     }
 }

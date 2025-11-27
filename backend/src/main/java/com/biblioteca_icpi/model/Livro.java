@@ -34,6 +34,9 @@ public class Livro {
 
     private boolean disponivel = true;
 
+    @Column(name = "capa_url")
+private String capaUrl;
+
     @OneToMany(mappedBy = "livro")
     private List<Aluguel> alugueis;
 
