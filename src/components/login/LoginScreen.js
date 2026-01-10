@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,12 +29,19 @@ export default function LoginScreen() {
           email: email,
           senha: password,
         },
+
         {
           headers: {
             'Content-Type': 'application/json',
           },
         },
       );
+      // 1. Pegamos os dados do usuário que o seu Java agora retorna
+      const {nome, role} = response.data;
+
+      // 2. SALVANDO NO DISPOSITIVO (AsyncStorage é assíncrono!)
+      await AsyncStorage.setItem('userName', nome);
+      await AsyncStorage.setItem('userRole', role);
 
       console.log('Login OK:', response.data);
       navigation.navigate('HomeScreen');

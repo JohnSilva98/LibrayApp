@@ -38,16 +38,16 @@ public class UsuarioController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
     Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail());
 
-
-    if (usuario == null) {
-        return ResponseEntity.status(401).body("Email não encontrado");
+// 2. Validação básica (verificando se existe e se a senha bate)
+    if (usuario != null && usuario.getSenha().equals(loginDTO.getSenha())) {
+        
+        // Se tudo estiver OK, retornamos o objeto usuário
+        // O JSON gerado terá o campo "role" que você precisa no Frontend
+        return ResponseEntity.ok(usuario);
     }
 
-    if (!usuario.getSenha().equals(loginDTO.getSenha())) {
-        return ResponseEntity.status(401).body("Senha incorreta");
-    }
-
-    return ResponseEntity.ok(usuario);
+    // 3. Se falhar, retorna erro 401
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha incorretos.");
 }
 
 

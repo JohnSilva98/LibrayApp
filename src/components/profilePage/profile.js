@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import {DadosContext} from '../contextData/contextData';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useEffect, useState} from 'react';
 
 const Profile = () => {
   const {myBooks, returnBook} = useContext(DadosContext);
@@ -16,6 +18,17 @@ const Profile = () => {
   const handleMyBooksPress = () => {
     navigation.navigate('rentedBooks');
   };
+
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    // Função para ler a role do storage
+    const loadUserData = async () => {
+      const role = await AsyncStorage.getItem('userRole');
+      setUserRole(role);
+    };
+    loadUserData();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -40,6 +53,12 @@ const Profile = () => {
         <TouchableOpacity style={styles.menuItem} onPress={handleMyBooksPress}>
           <Text>📚 Meus livros alugados</Text>
         </TouchableOpacity>
+        {/* PAINEL ADMIN CONDICIONAL */}
+        {userRole === 'ADMIN' && (
+          <TouchableOpacity style={styles.menuItem}>
+            <Text>🛠️ Painel Administrativo</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
