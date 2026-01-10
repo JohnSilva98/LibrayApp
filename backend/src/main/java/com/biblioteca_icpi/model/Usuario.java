@@ -9,15 +9,15 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(Long id, String nome, String email, String senha, String dataNascimento, String telefone, String role, List<Aluguel> alugueis) {
+    public Usuario(Long id, String nome, String email, String senha, String telefone, String role, List<Aluguel> alugueis) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.dataNascimento = dataNascimento;
         this.telefone = telefone;
         this.role = role;
         this.alugueis = alugueis;
+   
     }
 
     @Id
@@ -31,7 +31,6 @@ public class Usuario {
 
     private String senha;
 
-    private String dataNascimento;
 
     private String telefone;
 
@@ -53,8 +52,8 @@ public class Usuario {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
-    public String getDataNascimento() { return dataNascimento; }
-    public void setDataNascimento(String dataNascimento) { this.dataNascimento = dataNascimento; }
+    
+ 
 
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }

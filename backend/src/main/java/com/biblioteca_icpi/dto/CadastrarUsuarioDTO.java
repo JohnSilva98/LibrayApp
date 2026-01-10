@@ -12,8 +12,6 @@ public class CadastrarUsuarioDTO {
     @Email
     private String email;
 
-    @NotBlank(message = "A data de nascimento é obrigatória.")
-    private String dataNascimento;
 
     private String telefone;
 
@@ -43,12 +41,7 @@ public class CadastrarUsuarioDTO {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    public String getDataNascimento() {
-        return dataNascimento;
-    }
-    public void setDataNascimento(String dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
+
     public String getTelefone() {
         return telefone;
     }

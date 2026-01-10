@@ -15,21 +15,18 @@ function CreateAccount() {
   const navigation = useNavigation();
   const [form, setForm] = useState({
     firstName: '',
-    dob: '',
     phone: '',
     email: '',
     password: '',
+    role: 'user',
   });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const data = form.dob.split('/'); // ["31","12","1999"]
-  const dataFormatada = `${data[2]}-${data[1]}-${data[0]}`;
 
   const validate = () => {
     const e = {};
     if (!form.firstName.trim()) e.firstName = 'Preencha o nome';
-    if (!form.dob) e.dob = 'Preencha a data de nascimento';
     if (!form.phone.trim()) e.phone = 'Preencha o telefone';
     if (!form.email.trim()) e.email = 'Preencha o email';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
@@ -56,13 +53,13 @@ function CreateAccount() {
 
     try {
       const response = await axios.post(
-        'http://10.215.36.185:8080/usuarios',
+        'http://192.168.0.111:8080/usuarios',
         {
           nome: form.firstName,
-          dataNascimento: dataFormatada,
           telefone: form.phone,
           email: form.email,
           senha: form.password,
+          role: form.role,
         },
         {
           headers: {
@@ -78,29 +75,6 @@ function CreateAccount() {
       console.error('Erro ao criar usuário:', error);
       alert('Erro ao criar usuário');
     }
-  };
-
-  const handleDob = value => {
-    const numericValue = value.replace(/\D/g, '');
-    // Limita o número de dígitos (por exemplo, 8 para ddmmaaaa)
-    const limitedValue = numericValue.substring(0, 8);
-    // Insere as barras nas posições corretas
-    let formattedValue = '';
-    if (limitedValue.length >= 2) {
-      formattedValue += limitedValue.substring(0, 2) + '/';
-      if (limitedValue.length >= 4) {
-        formattedValue += limitedValue.substring(2, 4) + '/';
-        if (limitedValue.length > 4) {
-          formattedValue += limitedValue.substring(4);
-        }
-      } else {
-        formattedValue += limitedValue.substring(2);
-      }
-    } else {
-      formattedValue += limitedValue;
-    }
-    // Atualiza o estado ou valor do input
-    setForm(s => ({...s, dob: formattedValue}));
   };
 
   return (
@@ -119,17 +93,6 @@ function CreateAccount() {
             <Text style={styles.error}>{errors.firstName}</Text>
           )}
         </View>
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Data de nascimento</Text>
-        <TextInput
-          value={form.dob}
-          onChangeText={handleDob}
-          style={styles.input}
-          placeholder="DD/MM/YYYY"
-          keyboardType="number-pad"
-        />
-        {errors.dob && <Text style={styles.error}>{errors.dob}</Text>}
       </View>
 
       <View style={styles.field}>

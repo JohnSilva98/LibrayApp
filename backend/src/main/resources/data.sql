@@ -1,0 +1,1 @@
+INSERT INTO TB_USUARIO (nome, email, senha, telefone, role) VALUES ('Admin Teste', 'admin@teste.com', '123456', '1990-01-01', 'ADMIN');

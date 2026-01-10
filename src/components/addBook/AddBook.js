@@ -40,42 +40,42 @@ const AddBook = () => {
     }
   };
 
-  // =========================
-  // upload para o Supabase
-  // =========================
-  const uploadToSupabase = async () => {
-    if (!image?.base64) return null;
+  // // =========================
+  // // upload para o Supabase
+  // // =========================
+  // const uploadToSupabase = async () => {
+  //   if (!image?.base64) return null;
 
-    setUploading(true);
+  //   setUploading(true);
 
-    try {
-      const fileName = `books-ver/${Date.now()}.jpg`;
+  //   try {
+  //     const fileName = `books-ver/${Date.now()}.jpg`;
 
-      const {data, error} = await supabase.storage
-        .from('books-ver') // seu bucket
-        .upload(fileName, Buffer.from(image.base64, 'base64'), {
-          contentType: 'image/jpeg',
-          upsert: true,
-        });
+  //     const {data, error} = await supabase.storage
+  //       .from('books-ver') // seu bucket
+  //       .upload(fileName, Buffer.from(image.base64, 'base64'), {
+  //         contentType: 'image/jpeg',
+  //         upsert: true,
+  //       });
 
-      if (error) {
-        console.log(error);
-        return null;
-      }
+  //     if (error) {
+  //       console.log(error);
+  //       return null;
+  //     }
 
-      // retorna URL pública
-      const {data: publicUrl} = supabase.storage
-        .from('books-ver')
-        .getPublicUrl(fileName);
+  //     // retorna URL pública
+  //     const {data: publicUrl} = supabase.storage
+  //       .from('books-ver')
+  //       .getPublicUrl(fileName);
 
-      return publicUrl.publicUrl;
-    } catch (err) {
-      console.log('Erro upload:', err);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  };
+  //     return publicUrl.publicUrl;
+  //   } catch (err) {
+  //     console.log('Erro upload:', err);
+  //     return null;
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
 
   // =========================
   // enviar dados do livro
@@ -83,13 +83,13 @@ const AddBook = () => {
   const handleAddBook = async () => {
     let imageUrl = null;
 
-    if (image) {
-      imageUrl = await uploadToSupabase();
-    }
+    // if (image) {
+    //   imageUrl = await uploadToSupabase();
+    // }
 
     try {
       const response = await axios.post(
-        'http://10.215.36.185:8080/livros',
+        'http://192.168.0.111:8080/livros',
         {
           nome,
           autor,

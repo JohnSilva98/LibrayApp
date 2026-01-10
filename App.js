@@ -30,7 +30,7 @@ class App extends Component {
       <>
         <DadosProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="AddBook">
+            <Stack.Navigator initialRouteName="CreateAccount">
               <Stack.Screen
                 name="Splash"
                 component={Splash}

@@ -33,7 +33,6 @@ public class UsuarioService {
             usuario.setNome(dto.getNome());
             usuario.setEmail(dto.getEmail());
             usuario.setSenha(dto.getSenha());
-            usuario.setDataNascimento(dto.getDataNascimento());
             usuario.setTelefone(dto.getTelefone());
             Usuario usuarioSalvo = usuarioRepository.save(usuario);
             return usuarioSalvo;
