@@ -21,6 +21,7 @@ import Cart from './src/components/cart/Cart';
 import rentedBooks from './src/components/profilePage/rentedBooks';
 import RentalHistory from './src/components/rentalHistory/RentalHistory';
 import AddBook from './src/components/addBook/AddBook';
+import AdminDashboard from './src/components/AdminPanel/AdminPanel';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,6 +96,11 @@ class App extends Component {
                 name="AddBook"
                 component={AddBook}
                 options={{title: 'Adicionar Livro'}}
+              />
+              <Stack.Screen
+                name="AdminPanel"
+                component={AdminDashboard}
+                options={{title: ''}}
               />
             </Stack.Navigator>
           </NavigationContainer>

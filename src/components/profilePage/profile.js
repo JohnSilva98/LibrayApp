@@ -11,6 +11,7 @@ import {DadosContext} from '../contextData/contextData';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useState} from 'react';
+import AdminDashboard from '../AdminPanel/AdminPanel';
 
 const Profile = () => {
   const {myBooks, returnBook} = useContext(DadosContext);
@@ -29,6 +30,10 @@ const Profile = () => {
     };
     loadUserData();
   }, []);
+
+  const handleAdminPanel = () => {
+    navigation.navigate('AdminPanel');
+  };
 
   return (
     <View style={styles.container}>
@@ -55,7 +60,7 @@ const Profile = () => {
         </TouchableOpacity>
         {/* PAINEL ADMIN CONDICIONAL */}
         {userRole === 'ADMIN' && (
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleAdminPanel}>
             <Text>🛠️ Painel Administrativo</Text>
           </TouchableOpacity>
         )}
