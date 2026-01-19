@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -8,30 +8,56 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import DadosContext from '../contextData/contextData';
+import {useFocusEffect} from '@react-navigation/native';
+import axios from 'axios';
 import {useNavigation} from '@react-navigation/native';
 import Footer from '../footer/Footer';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Alert} from 'react-native';
 
 const GerenciarLivros = () => {
-  const {books} = useContext(DadosContext);
+  const [books, setBooks] = useState([]);
   const navigation = useNavigation();
-  const {deleteBook} = useContext(DadosContext);
 
-  const confirmarExclusao = id => {
+  // 1. Função para buscar livros do banco
+  const fetchBooks = async () => {
+    try {
+      const response = await axios.get('http://10.215.36.185:8080/livros');
+      console.log('DADOS DO BANCO:', response.data[0]);
+      setBooks(response.data);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Não foi possível carregar os livros do servidor.');
+    }
+  };
+  // 2. Atualiza sempre que você entra na tela
+  useFocusEffect(
+    useCallback(() => {
+      fetchBooks();
+    }, []),
+  );
+
+  // 3. Função de deletar atualizada para API
+  const deleteBook = async id => {
+    try {
+      await axios.delete(`http://10.215.36.185:8080/livros/${id}`);
+      Alert.alert('Sucesso', 'Livro removido com sucesso!');
+      fetchBooks(); // Recarrega a lista
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao deletar o livro no servidor.');
+    }
+  };
+
+  const confirmarExclusao = (id, nomeLivro) => {
     Alert.alert(
-      'Confirmar Exclusão', // Título do Alerta
-      'Você tem certeza que deseja remover este livro?', // Mensagem
+      'Confirmar Exclusão',
+      `Deseja realmente remover o livro "${nomeLivro}"?`,
       [
-        {
-          text: 'Cancelar',
-          style: 'cancel', // No iOS, isso destaca o botão como cancelamento
-        },
+        {text: 'Cancelar', style: 'cancel'},
         {
           text: 'Remover',
-          onPress: () => deleteBook(id), // Só executa se clicar aqui
-          style: 'destructive', // No iOS, deixa o texto em vermelho
+          onPress: () => deleteBook(id),
+          style: 'destructive',
         },
       ],
     );
@@ -39,32 +65,49 @@ const GerenciarLivros = () => {
 
   const renderBook = ({item}) => (
     <View style={styles.bookCard}>
-      <Image source={{uri: item.image}} style={styles.bookImage} />
+      {/* 1. Mantenha item.image se houver, ou use uma imagem padrão se vier vazio */}
+      <Image
+        source={{
+          uri: item.image || 'https://via.placeholder.com/50x75?text=Sem+Capa',
+        }}
+        style={styles.bookImage}
+      />
+
       <View style={styles.bookInfo}>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-        <Text style={styles.bookAuthor}>{item.author}</Text>
+        {/* 2. Alterado de item.title para item.nome */}
+        <Text style={styles.bookTitle}>{item.nome}</Text>
+
+        {/* 3. item.autor já está correto conforme seu log */}
+        <Text style={styles.bookAuthor}>{item.autor}</Text>
+
+        {/* Opcional: Mostrar o gênero que também veio no log */}
+        <Text style={{fontSize: 10, color: '#888'}}>{item.genero}</Text>
       </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('EditBook', {book: item})}>
-        <Icon name="pencil-outline" size={18} color="#17ea3aff" />
-        <Text style={styles.buttonText}> Editar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => confirmarExclusao(item.id)}>
-        <Icon name="trash-outline" size={18} color="#e21414ff" />
-        <Text style={{color: '#000000ff', marginLeft: 6}}> Remover</Text>
-      </TouchableOpacity>
+
+      <View style={{justifyContent: 'center'}}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('EditBook', {book: item})}>
+          <Icon name="pencil-outline" size={18} color="#17ea3aff" />
+          <Text style={styles.buttonText}> Editar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, {marginTop: 5}]}
+          onPress={() => confirmarExclusao(item.id, item.nome)}>
+          <Icon name="trash-outline" size={18} color="#e21414ff" />
+          <Text style={{color: '#000000ff', marginLeft: 6}}> Remover</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Todos os Livros</Text>
+      <Text style={styles.header}>Todos os Livros ({books.length})</Text>
       <FlatList
         data={books}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={item => item.id.toString()} // Importante usar o ID do banco
         renderItem={renderBook}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}

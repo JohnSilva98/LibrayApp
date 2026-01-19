@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,33 +6,48 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
-import {DadosContext} from '../contextData/contextData';
-
+import axios from 'axios'; // Importar axios para salvar no banco
 import Footer from '../footer/Footer';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const EditBook = ({route}) => {
-  const {updateBook} = useContext(DadosContext);
   const navigation = useNavigation();
   const {book} = route.params;
-  const [title, setTitle] = useState(book.title);
-  const [author, setAuthor] = useState(book.author);
-  const [description, setDescription] = useState(book.description);
-  const [genre, setGenre] = useState(book.genre);
 
-  const handleSave = () => {
+  // Ajustado para os nomes que vêm do seu banco (H2/Spring)
+  const [nome, setNome] = useState(book.nome || book.title);
+  const [autor, setAutor] = useState(book.autor || book.author);
+  const [descricao, setDescription] = useState(
+    book.descricao || book.description,
+  );
+  const [genero, setGenre] = useState(book.genero || book.genre);
+
+  const handleSave = async () => {
+    // Objeto formatado para o que o seu Backend espera
     const updatedBook = {
-      ...book, // Mantém o ID e a imagem originais
-      title: title,
-      author: author,
-      description: description,
-      genre: genre,
+      ...book,
+      nome: nome,
+      autor: autor,
+      descricao: descricao,
+      genero: genero,
     };
 
-    updateBook(book.id, updatedBook);
-    navigation.goBack();
+    try {
+      // Faz a atualização diretamente no Banco de Dados
+      await axios.put(
+        `http://10.215.36.185:8080/livros/${book.id}`,
+        updatedBook,
+      );
+
+      Alert.alert('Sucesso', 'Livro atualizado com sucesso!');
+      navigation.goBack(); // Volta para a lista, que será atualizada pelo useFocusEffect
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Não foi possível salvar as alterações no servidor.');
+    }
   };
 
   return (
@@ -41,43 +56,44 @@ const EditBook = ({route}) => {
         <Text style={styles.label}>Título do Livro</Text>
         <TextInput
           style={styles.input}
-          value={title}
-          onChangeText={setTitle}
+          value={nome}
+          onChangeText={setNome}
           placeholder="Digite o título"
-          placeholderTextColor="#000"
+          placeholderTextColor="#666"
         />
 
         <Text style={styles.label}>Autor</Text>
         <TextInput
           style={styles.input}
-          value={author}
-          onChangeText={setAuthor}
+          value={autor}
+          onChangeText={setAutor}
           placeholder="Digite o autor"
-          placeholderTextColor="#000"
+          placeholderTextColor="#666"
         />
 
         <Text style={styles.label}>Descrição</Text>
         <TextInput
-          style={styles.input}
-          value={description}
+          style={[styles.input, {height: 80}]} // Aumentado para descrição
+          value={descricao}
           onChangeText={setDescription}
           placeholder="Digite a descrição"
-          placeholderTextColor="#000"
+          multiline
+          placeholderTextColor="#666"
         />
 
         <Text style={styles.label}>Gênero</Text>
         <TextInput
           style={styles.input}
-          value={genre}
+          value={genero}
           onChangeText={setGenre}
           placeholder="Digite o gênero"
-          placeholderTextColor="#000"
+          placeholderTextColor="#666"
         />
 
         <TouchableOpacity onPress={handleSave}>
           <View style={styles.button}>
             <Icon name="save-outline" size={18} color="#fff" />
-            <Text style={styles.buttonText}>Salvar Alterações</Text>
+            <Text style={styles.buttonText}> Salvar Alterações</Text>
           </View>
         </TouchableOpacity>
       </ScrollView>

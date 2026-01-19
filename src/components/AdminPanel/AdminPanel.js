@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -33,6 +34,12 @@ export default function AdminDashboard({navigation}) {
       setLoading(false);
     }
   };
+  // Este hook roda toda vez que você volta para esta tela
+  useFocusEffect(
+    useCallback(() => {
+      fetchDashboardData();
+    }, []),
+  );
 
   if (loading) {
     return (
