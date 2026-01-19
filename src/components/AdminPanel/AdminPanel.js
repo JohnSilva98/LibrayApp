@@ -20,8 +20,8 @@ export default function AdminDashboard({navigation}) {
   const fetchDashboardData = async () => {
     try {
       // Ajuste os endpoints conforme sua API
-      const resLivros = await axios.get('http://192.168.0.111:8080/livros');
-      const resUsuarios = await axios.get('http://192.168.0.111:8080/usuarios');
+      const resLivros = await axios.get('http://10.215.36.185:8080/livros');
+      const resUsuarios = await axios.get('http://10.215.36.185:8080/usuarios');
 
       setStats({
         totalLivros: resLivros.data.length,

@@ -22,6 +22,7 @@ import rentedBooks from './src/components/profilePage/rentedBooks';
 import RentalHistory from './src/components/rentalHistory/RentalHistory';
 import AddBook from './src/components/addBook/AddBook';
 import AdminDashboard from './src/components/AdminPanel/AdminPanel';
+import GerenciarLivros from './src/components/AdminPanel/GerenciarLivros';
 
 const Stack = createNativeStackNavigator();
 
@@ -101,6 +102,11 @@ class App extends Component {
                 name="AdminPanel"
                 component={AdminDashboard}
                 options={{title: ''}}
+              />
+              <Stack.Screen
+                name="GerenciarLivros"
+                component={GerenciarLivros}
+                options={{title: 'Gerenciador de livros'}}
               />
             </Stack.Navigator>
           </NavigationContainer>
