@@ -10,18 +10,17 @@ import {
 } from 'react-native';
 
 import {launchImageLibrary} from 'react-native-image-picker';
-import {supabase} from '@supabase/supabase-js';
 import axios from 'axios';
-import Footer from '../footer/Footer';
+
 import {useNavigation} from '@react-navigation/native';
 
-const AddBook = () => {
+const AddUser = () => {
   const navigation = useNavigation();
 
   const [nome, setNome] = useState('');
-  const [autor, setAutor] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [genero, setGenero] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [senha, setSenha] = useState('');
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -40,7 +39,7 @@ const AddBook = () => {
     }
   };
 
-  const handleAddBook = async () => {
+  const handleAddUser = async () => {
     let imageUrl = null;
 
     // if (image) {
@@ -49,12 +48,12 @@ const AddBook = () => {
 
     try {
       const response = await axios.post(
-        'http://10.215.36.185:8080/livros',
+        'http://10.215.36.185:8080/usuarios',
         {
           nome,
-          autor,
-          genero,
-          descricao,
+          email,
+          telefone,
+          senha,
           imagem: imageUrl,
         },
         {
@@ -79,56 +78,56 @@ const AddBook = () => {
               style={{width: 120, height: 160, borderRadius: 8}}
             />
           ) : (
-            <Text style={{color: '#555'}}>Selecionar capa do livro</Text>
+            <Text style={{color: '#555'}}>Selecionar imagem de perfil</Text>
           )}
         </TouchableOpacity>
 
-        <Text style={styles.label}>Título do Livro</Text>
+        <Text style={styles.label}>Nome</Text>
         <TextInput
           style={styles.input}
           value={nome}
           onChangeText={setNome}
-          placeholder="Digite o título"
+          placeholder="Ex: José da Silva"
           placeholderTextColor="#000"
         />
 
-        <Text style={styles.label}>Autor</Text>
+        <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
-          value={autor}
-          onChangeText={setAutor}
-          placeholder="Digite o autor"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Digite o email"
           placeholderTextColor="#000"
         />
 
-        <Text style={styles.label}>Descrição</Text>
+        <Text style={styles.label}>Telefone</Text>
         <TextInput
           style={styles.input}
-          value={descricao}
-          onChangeText={setDescricao}
-          placeholder="Digite a descrição"
+          value={telefone}
+          onChangeText={setTelefone}
+          placeholder="e.g., (11) 98456-7890"
+          keyboardType="phone-pad"
           placeholderTextColor="#000"
         />
 
-        <Text style={styles.label}>Gênero</Text>
+        <Text style={styles.label}>Senha</Text>
         <TextInput
           style={styles.input}
-          value={genero}
-          onChangeText={setGenero}
-          placeholder="Digite o gênero"
+          secureTextEntry={true}
+          value={senha}
+          onChangeText={setSenha}
+          placeholder="Digite a senha"
           placeholderTextColor="#000"
         />
 
-        <TouchableOpacity onPress={handleAddBook}>
+        <TouchableOpacity onPress={handleAddUser} disabled={uploading}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>
-              {uploading ? 'Enviando...' : 'Adicionar Livro'}
+              {uploading ? 'Enviando...' : 'Adicionar Usuário'}
             </Text>
           </View>
         </TouchableOpacity>
       </ScrollView>
-
-      <Footer />
     </View>
   );
 };
@@ -165,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddBook;
+export default AddUser;

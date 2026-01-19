@@ -72,10 +72,20 @@ export default function AdminDashboard({navigation}) {
 
         <TouchableOpacity
           style={styles.button}
+          onPress={() => navigation.navigate('AddBook')}>
+          <Text style={styles.buttonText}>📚 Adicionar Livros</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
           onPress={() => navigation.navigate('GerenciarLivros')}>
           <Text style={styles.buttonText}>📚 Gerenciar Livros</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={[styles.button, {backgroundColor: '#28a745'}]}
+          onPress={() => navigation.navigate('AddUser')}>
+          <Text style={styles.buttonText}>👥 Adicionar Usuários</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, {backgroundColor: '#28a745'}]}
           onPress={() => navigation.navigate('GerenciarUsuarios')}>
