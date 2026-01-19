@@ -11,10 +11,31 @@ import {
 import DadosContext from '../contextData/contextData';
 import {useNavigation} from '@react-navigation/native';
 import Footer from '../footer/Footer';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {Alert} from 'react-native';
 
 const BooksScreen = () => {
   const {books} = useContext(DadosContext);
   const navigation = useNavigation();
+  const {deleteBook} = useContext(DadosContext);
+
+  const confirmarExclusao = id => {
+    Alert.alert(
+      'Confirmar Exclusão', // Título do Alerta
+      'Você tem certeza que deseja remover este livro?', // Mensagem
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel', // No iOS, isso destaca o botão como cancelamento
+        },
+        {
+          text: 'Remover',
+          onPress: () => deleteBook(id), // Só executa se clicar aqui
+          style: 'destructive', // No iOS, deixa o texto em vermelho
+        },
+      ],
+    );
+  };
 
   const renderBook = ({item}) => (
     <View style={styles.bookCard}>
@@ -25,13 +46,15 @@ const BooksScreen = () => {
       </View>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('BookDetails', {book: item})}>
-        <Text style={styles.buttonText}>✏ Editar</Text>
+        onPress={() => navigation.navigate('EditBook', {book: item})}>
+        <Icon name="pencil-outline" size={18} color="#17ea3aff" />
+        <Text style={styles.buttonText}> Editar</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('BookDetails', {book: item})}>
-        <Text style={styles.buttonText}>🗑 Deletar</Text>
+        onPress={() => confirmarExclusao(item.id)}>
+        <Icon name="trash-outline" size={18} color="#e21414ff" />
+        <Text style={{color: '#000000ff', marginLeft: 6}}> Remover</Text>
       </TouchableOpacity>
     </View>
   );
@@ -106,12 +129,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   button: {
-    backgroundColor: '#f09813ff',
+    backgroundColor: '#eae9e6ff',
     borderRadius: 8,
     marginHorizontal: 3,
+    width: 90,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   buttonText: {
-    color: '#fff',
+    color: '#000000ff',
     fontWeight: '600',
   },
 });

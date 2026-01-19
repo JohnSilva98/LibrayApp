@@ -40,46 +40,6 @@ const AddBook = () => {
     }
   };
 
-  // // =========================
-  // // upload para o Supabase
-  // // =========================
-  // const uploadToSupabase = async () => {
-  //   if (!image?.base64) return null;
-
-  //   setUploading(true);
-
-  //   try {
-  //     const fileName = `books-ver/${Date.now()}.jpg`;
-
-  //     const {data, error} = await supabase.storage
-  //       .from('books-ver') // seu bucket
-  //       .upload(fileName, Buffer.from(image.base64, 'base64'), {
-  //         contentType: 'image/jpeg',
-  //         upsert: true,
-  //       });
-
-  //     if (error) {
-  //       console.log(error);
-  //       return null;
-  //     }
-
-  //     // retorna URL pública
-  //     const {data: publicUrl} = supabase.storage
-  //       .from('books-ver')
-  //       .getPublicUrl(fileName);
-
-  //     return publicUrl.publicUrl;
-  //   } catch (err) {
-  //     console.log('Erro upload:', err);
-  //     return null;
-  //   } finally {
-  //     setUploading(false);
-  //   }
-  // };
-
-  // =========================
-  // enviar dados do livro
-  // =========================
   const handleAddBook = async () => {
     let imageUrl = null;
 

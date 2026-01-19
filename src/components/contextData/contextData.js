@@ -25,6 +25,11 @@ export const DadosProvider = ({children}) => {
     setCart(cart => cart.filter(b => b.id !== bookId));
   };
 
+  // 🗑️ Remover livro do banco de dados
+  const deleteBook = bookId => {
+    setBooks(prev => prev.filter(book => book.id !== bookId));
+  };
+
   // ✅ Verificar se um livro já foi alugado e ainda não devolvido
   const isBookRented = bookId => {
     return myBooks.some(b => b.id === bookId && !b.returned);
@@ -72,6 +77,12 @@ export const DadosProvider = ({children}) => {
       ),
     );
   };
+  // ✏️ Atualizar detalhes do livro
+  const updateBook = (bookId, updatedBook) => {
+    setBooks(prev =>
+      prev.map(book => (book.id === bookId ? updatedBook : book)),
+    );
+  };
 
   return (
     <DadosContext.Provider
@@ -82,6 +93,8 @@ export const DadosProvider = ({children}) => {
         setCart,
         addToCart,
         removeFromCart,
+        deleteBook,
+        updateBook,
         confirmRent,
         myBooks,
         setMyBooks,
