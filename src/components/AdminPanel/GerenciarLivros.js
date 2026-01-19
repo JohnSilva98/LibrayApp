@@ -14,7 +14,7 @@ import Footer from '../footer/Footer';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Alert} from 'react-native';
 
-const BooksScreen = () => {
+const GerenciarLivros = () => {
   const {books} = useContext(DadosContext);
   const navigation = useNavigation();
   const {deleteBook} = useContext(DadosContext);
@@ -144,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BooksScreen;
+export default GerenciarLivros;
