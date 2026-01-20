@@ -27,12 +27,16 @@ const ProfileInfo = () => {
   useEffect(() => {
     const loadUserData = async () => {
       try {
+        console.log('Iniciando carregamento de dados do usuário...');
         const storedId = await AsyncStorage.getItem('userId');
+        console.log('ID encontrado no AsyncStorage:', storedId);
 
         if (storedId) {
+          console.log('Fazendo requisição para:', `http://10.215.36.185:8080/usuarios/${storedId}`);
           const response = await axios.get(
             `http://10.215.36.185:8080/usuarios/${storedId}`,
           );
+          console.log('Resposta da API:', response.data);
           const user = response.data;
 
           setId(user.id);
@@ -40,9 +44,13 @@ const ProfileInfo = () => {
           setEmail(user.email);
           setTelefone(user.telefone || '');
           setSenha(user.senha || ''); // Preenche com a senha atual vinda do banco
+          console.log('Dados carregados com sucesso!');
+        } else {
+          console.log('Nenhum userId encontrado no AsyncStorage');
         }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
+        console.error('Detalhes do erro:', error.response?.data || error.message);
         Alert.alert('Erro', 'Não foi possível carregar seus dados.');
       } finally {
         setLoading(false);
