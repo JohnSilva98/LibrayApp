@@ -25,4 +25,10 @@ public class EditarUsuarioDTO {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public String getTelefone() {
+        return null;
+    }
+    public void setTelefone(String telefone) {
+    }
 }

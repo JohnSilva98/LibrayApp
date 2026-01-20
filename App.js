@@ -26,6 +26,7 @@ import GerenciarLivros from './src/components/AdminPanel/GerenciarLivros';
 import editBook from './src/components/EditBook/editBook';
 import GerenciarUsuarios from './src/components/AdminPanel/GerenciarUsuarios';
 import AddUser from './src/components/addBook/AddUser';
+import ProfileInfo from './src/components/profilePage/ProfileInfo';
 
 const Stack = createNativeStackNavigator();
 
@@ -125,6 +126,11 @@ class App extends Component {
                 name="AddUser"
                 component={AddUser}
                 options={{title: 'Adicionar Usuário'}}
+              />
+              <Stack.Screen
+                name="ProfileInfo"
+                component={ProfileInfo}
+                options={{title: 'Informações do Perfil'}}
               />
             </Stack.Navigator>
           </NavigationContainer>
