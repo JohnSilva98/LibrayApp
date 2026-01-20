@@ -11,6 +11,7 @@ import com.biblioteca_icpi.repository.LivroRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LivroService {
@@ -62,7 +63,7 @@ public class LivroService {
         return livroRepository.findAll();
     }
 
-
+    @Transactional
     public void marcarComoAlugado (Livro livro) {
         if (livro.isDisponivel()) {
             livro.setDisponivel(false);
@@ -73,13 +74,15 @@ public class LivroService {
         }
     }
 
+    @Transactional
     public void marcarcomoDisponivel (Livro livro) {
-        if (livro.isDisponivel()) {
-            throw  new IllegalStateException("Este livro já está disponível!");
-        }
-        else {
+        if (!livro.isDisponivel()) {
             livro.setDisponivel(true);
             livroRepository.save(livro);
+        }
+        else {
+            
+            throw  new IllegalStateException("Este livro já está disponível!");
         }
     }
 }

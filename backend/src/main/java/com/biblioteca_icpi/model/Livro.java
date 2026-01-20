@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "TB_LIVRO")
 public class Livro {
@@ -42,6 +44,7 @@ public class Livro {
     private String capaUrl;
 
     @OneToMany(mappedBy = "livro")
+    @JsonIgnore
     private List<Aluguel> alugueis;
 
     public Long getId() {

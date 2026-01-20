@@ -5,6 +5,9 @@ import com.biblioteca_icpi.model.Livro;
 import com.biblioteca_icpi.model.Usuario;
 import com.biblioteca_icpi.repository.AluguelRepository;
 import com.biblioteca_icpi.repository.LivroRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,6 +28,7 @@ public class AluguelService {
         this.usuarioService = usuarioService;
     }
 
+    @Transactional
     public Aluguel alugarLivro (Long idUsuario, Long idLivro) {
         Livro livro = livroService.buscarLivroNoBancoDeDados(idLivro);
         Usuario usuario = usuarioService.buscarUsuarioNoBanco(idUsuario);

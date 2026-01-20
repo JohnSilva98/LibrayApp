@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "TB_ALUGUEL")
 public class Aluguel {
@@ -27,6 +29,7 @@ public class Aluguel {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonManagedReference   
     private Usuario usuario;
 
     @ManyToOne

@@ -6,32 +6,37 @@ import {Alert} from 'react-native';
 export const DadosContext = createContext();
 
 export const DadosProvider = ({children}) => {
-  const [books, setBooks] = useState([
-    {id: 1, nome: 'Teste de Conexão', autor: 'App', capaUrl: ''},
-  ]); // Começa vazio
+  // 1. Inicialize com array vazio para não misturar dados de teste com dados do banco
+  const [books, setBooks] = useState([]);
   const [cart, setCart] = useState([]);
   const [myBooks, setMyBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // --- 1. BUSCAR LIVROS DO BACKEND ---
   const fetchBooks = useCallback(async () => {
+    // Evita múltiplas chamadas simultâneas
+    if (loading) return;
+
     try {
-      console.log('Iniciando busca de livros...');
+      setLoading(true);
+      console.log('--- Buscando livros no Backend ---');
       const response = await axios.get('http://10.215.36.185:8080/livros');
 
-      console.log('Livros recebidos do Java:', response.data.length);
-      setBooks(response.data); // Aqui os livros entram no estado
+      if (response.data) {
+        console.log('Livros atualizados:', response.data.length);
+        setBooks(response.data);
+      }
     } catch (error) {
-      console.error('Erro na conexão com o Backend:', error);
+      console.error('Erro ao buscar livros:', error);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, []); // useCallback sem dependências para a função ser estável
 
-  // Carrega os livros assim que o App abre
+  // 2. O useEffect deve rodar APENAS uma vez no início
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, []); // [] garante que só rode ao montar o Provider
 
-  // --- 2. ADICIONAR AO CARRINHO ---
   const addToCart = book => {
     setCart(prev =>
       prev.find(b => b.id === book.id) ? prev : [...prev, book],
@@ -42,35 +47,29 @@ export const DadosProvider = ({children}) => {
     setCart(prev => prev.filter(b => b.id !== bookId));
   };
 
-  // --- 3. CONFIRMAR ALUGUEL (INTEGRAÇÃO COM JAVA) ---
   const confirmRent = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
       if (!userId) {
-        Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
+        Alert.alert('Erro', 'Usuário não identificado.');
         return;
       }
 
-      // Usamos um Loop para enviar cada livro separadamente
       for (const book of cart) {
-        // O segredo está nestas chaves: devem ser idUsuario e idLivro
         const payload = {
           idUsuario: parseInt(userId),
           idLivro: parseInt(book.id),
         };
-
-        console.log('Enviando para o servidor:', payload);
-
         await axios.post(`http://10.215.36.185:8080/alugueis`, payload);
       }
 
-      Alert.alert('Sucesso', 'Aluguel realizado com sucesso!');
+      Alert.alert('Sucesso', 'Aluguel realizado!');
       setCart([]);
-      fetchBooks(); // Isso vai atualizar o campo "disponivel" na Home
+      // Atualiza a lista após o aluguel
+      fetchBooks();
     } catch (error) {
-      // Log detalhado para ver o que o Java respondeu no erro 400
-      console.error('Erro detalhado:', error.response?.data);
-      Alert.alert('Erro', 'Falha ao processar aluguel. Verifique os dados.');
+      console.error('Erro no aluguel:', error.response?.data || error.message);
+      Alert.alert('Erro', 'Falha ao processar aluguel.');
     }
   };
 
@@ -78,7 +77,6 @@ export const DadosProvider = ({children}) => {
     <DadosContext.Provider
       value={{
         books,
-        setBooks,
         fetchBooks,
         cart,
         addToCart,
@@ -86,6 +84,7 @@ export const DadosProvider = ({children}) => {
         confirmRent,
         myBooks,
         setMyBooks,
+        loading,
       }}>
       {children}
     </DadosContext.Provider>

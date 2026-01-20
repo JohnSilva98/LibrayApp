@@ -3,6 +3,8 @@ package com.biblioteca_icpi.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "TB_USUARIO")
 public class Usuario {
@@ -39,6 +41,7 @@ public class Usuario {
     private String role = "USER"; // USER ou ADMIN
 
     @OneToMany(mappedBy = "usuario")
+    // @JsonIgnore     
     private List<Aluguel> alugueis;
 
     private String fotoUrl;
