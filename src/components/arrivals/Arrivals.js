@@ -26,7 +26,7 @@ const Arrivals = () => {
     navigation.navigate('BookDetails', {book});
   };
 
-  const newBooks = books.filter(book => book.isNew).slice(0, 8);
+  const newBooks = Array.isArray(books) ? books.slice(0, 8) : [];
 
   const [expanded, setExpanded] = useState(false);
   const minHeight = 350;
@@ -105,12 +105,19 @@ const Arrivals = () => {
             horizontal
             data={newBooks}
             showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => (
-              <TouchableOpacity onPress={() => handleBookPress(item)}>
-                <BookCard data={item} />
-              </TouchableOpacity>
-            )}
-            keyExtractor={item => item.id.toString()}
+            renderItem={({item}) => {
+              // 2. Só renderiza se o item realmente existir
+              if (!item) return null;
+              return (
+                <TouchableOpacity onPress={() => handleBookPress(item)}>
+                  <BookCard data={item} />
+                </TouchableOpacity>
+              );
+            }}
+            // 3. A SEGURANÇA CHAVE: Opcional Chaining (?.) e Fallback para o ID
+            keyExtractor={(item, index) =>
+              item?.id?.toString() || index.toString()
+            }
             contentContainerStyle={{paddingHorizontal: 10}}
           />
         </View>
@@ -123,14 +130,27 @@ const Arrivals = () => {
   );
 };
 
-const BookCard = ({data}) => (
-  <View style={styles.card}>
-    <Image source={{uri: data.image}} style={styles.image} />
-    <Text style={styles.title}>{data.title}</Text>
-    <Text style={styles.author}>{data.author}</Text>
-  </View>
-);
+const BookCard = ({data}) => {
+  // Se não houver dados, não renderiza nada para evitar crash
+  if (!data) return null;
 
+  return (
+    <View style={styles.card}>
+      <Image
+        source={{uri: data.capaUrl || 'https://via.placeholder.com/150'}}
+        style={styles.image}
+        resizeMode="contain"
+      />
+      {/* Usamos o operador ?. para evitar erros caso o campo venha nulo */}
+      <Text style={styles.title} numberOfLines={1}>
+        {data.nome || 'Sem título'}
+      </Text>
+      <Text style={styles.author} numberOfLines={1}>
+        {data.autor || 'Autor desconhecido'}
+      </Text>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   screen: {backgroundColor: '#f1f0ee', flex: 1},
   container: {padding: 8},

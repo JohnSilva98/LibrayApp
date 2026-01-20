@@ -17,23 +17,27 @@ const Cart = () => {
 
   const renderBook = ({item}) => (
     <View style={styles.card}>
-      <Image source={{uri: item.image}} style={styles.image} />
-      <View style={styles.info}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.author}>{item.author}</Text>
+      {/* 1. Ajuste do campo de imagem: capaUrl */}
+      <Image
+        source={{uri: item.capaUrl || 'https://via.placeholder.com/150'}}
+        style={styles.image}
+        resizeMode="contain"
+      />
 
-        {item.rentDate && (
-          <Text style={styles.dateText}>Alugado em: {item.rentDate}</Text>
-        )}
-        {item.returnDate && (
-          <Text style={styles.dateText}>Devolução: {item.returnDate}</Text>
-        )}
+      <View style={styles.info}>
+        <View>
+          {/* 2. Ajuste dos nomes: nome e autor */}
+          <Text style={styles.title} numberOfLines={2}>
+            {item.nome}
+          </Text>
+          <Text style={styles.author}>{item.autor}</Text>
+        </View>
 
         <TouchableOpacity
-          style={styles.returnButton}
+          style={styles.removeButton}
           onPress={() => removeFromCart(item.id)}>
-          <Icon name="trash-outline" size={18} color="#fff" />
-          <Text style={{color: '#fff', marginLeft: 6}}>Remover</Text>
+          <Icon name="trash-outline" size={16} color="#d9534f" />
+          <Text style={styles.removeText}>Remover</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -44,25 +48,27 @@ const Cart = () => {
       <Text style={styles.header}>📚 Livros no Carrinho</Text>
 
       {cart.length === 0 ? (
-        <Text style={styles.empty}>Nenhum livro no carrinho.</Text>
+        <View style={styles.emptyContainer}>
+          <Icon name="cart-outline" size={60} color="#ccc" />
+          <Text style={styles.empty}>Seu carrinho está vazio.</Text>
+        </View>
       ) : (
-        <>
-          {/* FlatList com flex menor para sobrar espaço para o botão */}
+        /* O segredo está aqui: a View interna ocupa o espaço entre o Header e o Footer */
+        <View style={styles.content}>
           <FlatList
-            style={{flexGrow: 0}}
             data={cart}
             renderItem={renderBook}
-            keyExtractor={(item, index) =>
-              item?.id ? item.id.toString() : index.toString()
-            }
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={{paddingBottom: 20}}
+            style={{flex: 1}} // Faz a lista crescer até onde der
           />
 
-          {/* Botão de confirmar visível abaixo da lista */}
+          {/* O botão fica fixo aqui, logo após o fim da área da lista */}
           <TouchableOpacity style={styles.confirmButton} onPress={confirmRent}>
-            <Icon name="checkmark-circle" size={20} color="#fff" />
+            <Icon name="checkmark-circle" size={22} color="#fff" />
             <Text style={styles.confirmText}>Confirmar Aluguel</Text>
           </TouchableOpacity>
-        </>
+        </View>
       )}
 
       <Footer />
@@ -74,49 +80,60 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f1f0ee',
-    padding: 16,
-    justifyContent: 'flex-start',
+  },
+  content: {
+    flex: 1, // Isso obriga o conteúdo a preencher o espaço antes do Footer
+    marginBottom: 70, // Pequena margem para não encostar no Footer
+    paddingHorizontal: 16,
   },
   header: {
-    fontSize: 22,
+    padding: 16,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 12,
     color: '#111',
   },
   card: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     marginBottom: 12,
-    borderRadius: 10,
-    overflow: 'hidden',
-    elevation: 3,
+    borderRadius: 12,
+    padding: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.1,
   },
-  image: {width: 90, height: 120},
-  info: {flex: 1, padding: 10, justifyContent: 'space-between'},
-  title: {fontSize: 18, fontWeight: 'bold', color: '#333'},
-  author: {fontSize: 15, color: '#666'},
-  empty: {fontSize: 18, color: '#555', textAlign: 'center', marginTop: 30},
-  returnButton: {
+  image: {width: 70, height: 100, borderRadius: 4},
+  info: {flex: 1, marginLeft: 12, justifyContent: 'space-between'},
+  title: {fontSize: 16, fontWeight: 'bold', color: '#333'},
+  author: {fontSize: 14, color: '#666', marginBottom: 5},
+  removeButton: {
     flexDirection: 'row',
-    backgroundColor: '#f08c13',
-    padding: 8,
-    borderRadius: 8,
     alignItems: 'center',
     alignSelf: 'flex-start',
   },
-  dateText: {fontSize: 14, color: '#777'},
+  removeText: {
+    color: '#d9534f',
+    marginLeft: 4,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  emptyContainer: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  empty: {fontSize: 18, color: '#999', marginTop: 10},
   confirmButton: {
     flexDirection: 'row',
     backgroundColor: '#28a745',
-    width: '50%',
-    alignSelf: 'center',
-    padding: 12,
-    borderRadius: 8,
+    paddingVertical: 15,
+    borderRadius: 12, // Menos arredondado para ocupar melhor a largura
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    marginBottom: 10, // Garante que não fique colado no Footer
   },
-  confirmText: {color: '#fff', fontSize: 16, fontWeight: 'bold'},
+  confirmText: {color: '#fff', fontSize: 18, fontWeight: 'bold', marginLeft: 8},
 });
 
 export default Cart;

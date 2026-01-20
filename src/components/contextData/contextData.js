@@ -1,87 +1,67 @@
-import React, {createContext, useState} from 'react';
-import booksData from '../data/booksData.json';
+import React, {createContext, useState, useEffect, useCallback} from 'react';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert} from 'react-native';
 
 export const DadosContext = createContext();
 
 export const DadosProvider = ({children}) => {
-  const [books, setBooks] = useState(booksData);
+  const [books, setBooks] = useState([]); // Começa vazio
   const [cart, setCart] = useState([]);
-
-  // Livros atualmente alugados (ativos)
   const [myBooks, setMyBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Histórico completo de aluguéis (ativos + devolvidos)
-  const [history, setHistory] = useState([]);
+  // --- 1. BUSCAR LIVROS DO BACKEND ---
+  const fetchBooks = useCallback(async () => {
+    try {
+      const response = await axios.get('http://10.215.36.185:8080/livros');
+      setBooks(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar livros:', error);
+    }
+  }, []);
 
-  // 👉 Adicionar ao carrinho (evita duplicados)
+  // Carrega os livros assim que o App abre
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks]);
+
+  // --- 2. ADICIONAR AO CARRINHO ---
   const addToCart = book => {
     setCart(prev =>
       prev.find(b => b.id === book.id) ? prev : [...prev, book],
     );
   };
 
-  // 🗑️ Remover livro do carrinho
   const removeFromCart = bookId => {
-    setCart(cart => cart.filter(b => b.id !== bookId));
+    setCart(prev => prev.filter(b => b.id !== bookId));
   };
 
-  // 🗑️ Remover livro do banco de dados
-  const deleteBook = bookId => {
-    setBooks(prev => prev.filter(book => book.id !== bookId));
-  };
+  // --- 3. CONFIRMAR ALUGUEL (INTEGRAÇÃO COM JAVA) ---
+  const confirmRent = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
+        return;
+      }
 
-  // ✅ Verificar se um livro já foi alugado e ainda não devolvido
-  const isBookRented = bookId => {
-    return myBooks.some(b => b.id === bookId && !b.returned);
-  };
+      // Para cada livro no carrinho, fazemos um POST para o endpoint de aluguel
+      // Ajuste a URL abaixo conforme o seu Controller de Aluguéis no Spring
+      for (const book of cart) {
+        await axios.post(`http://10.215.36.185:8080/alugueis`, {
+          usuarioId: userId,
+          livroId: book.id,
+        });
+      }
 
-  // ✅ Finalizar aluguel (confirma carrinho → meus livros e histórico)
-  const confirmRent = () => {
-    const today = new Date();
-    const returnDate = new Date();
-    returnDate.setDate(today.getDate() + 7); // 7 dias de aluguel
-
-    const rented = cart.map(book => ({
-      ...book,
-      rentDate: today.toISOString(),
-      returnDate: returnDate.toISOString(),
-      returned: false,
-      rentalId: Date.now() + Math.random(), // ID único
-    }));
-
-    // adiciona aos livros atuais e ao histórico
-    setMyBooks(prev => [...prev, ...rented]);
-    setHistory(prev => [...prev, ...rented]);
-
-    // limpa o carrinho
-    setCart([]);
-  };
-
-  // 🔄 Devolver livro
-  const returnBook = rentalId => {
-    // Localiza o livro devolvido
-    const returnedBook = myBooks.find(b => b.rentalId === rentalId);
-    if (!returnedBook) return;
-
-    // Atualiza lista de alugados (marca como devolvido)
-    setMyBooks(
-      prev => prev.filter(b => b.rentalId !== rentalId), // remove da tela "Meus Livros"
-    );
-
-    // Atualiza histórico: marca como devolvido
-    setHistory(prev =>
-      prev.map(b =>
-        b.rentalId === rentalId
-          ? {...b, returned: true, returnDate: new Date().toISOString()}
-          : b,
-      ),
-    );
-  };
-  // ✏️ Atualizar detalhes do livro
-  const updateBook = (bookId, updatedBook) => {
-    setBooks(prev =>
-      prev.map(book => (book.id === bookId ? updatedBook : book)),
-    );
+      Alert.alert('Sucesso', 'Aluguel realizado com sucesso!');
+      setCart([]); // Limpa carrinho
+      fetchBooks(); // Atualiza lista (para marcar como indisponível)
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao processar aluguel no servidor.');
+    }
   };
 
   return (
@@ -89,23 +69,15 @@ export const DadosProvider = ({children}) => {
       value={{
         books,
         setBooks,
+        fetchBooks,
         cart,
-        setCart,
         addToCart,
         removeFromCart,
-        deleteBook,
-        updateBook,
         confirmRent,
         myBooks,
         setMyBooks,
-        returnBook,
-        history,
-        setHistory,
-        isBookRented,
       }}>
       {children}
     </DadosContext.Provider>
   );
 };
-
-export default DadosContext;
