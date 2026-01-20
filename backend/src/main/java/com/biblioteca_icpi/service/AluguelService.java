@@ -65,5 +65,9 @@ public class AluguelService {
         return alugueis;
     }
 
+    public List<Aluguel> consultarAlugueisPorUsuario(Long usuarioId) {
+        return aluguelRepository.findByUsuarioId(usuarioId);
+    }
+
 
 }

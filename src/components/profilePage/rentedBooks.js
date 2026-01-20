@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
   View,
   Text,
@@ -10,13 +10,25 @@ import {
 import {DadosContext} from '../contextData/contextData';
 
 const RentedBooks = () => {
-  const {myBooks, returnBook} = useContext(DadosContext);
+  const {myBooks, returnBook, fetchMyRentedBooks} = useContext(DadosContext);
+
+  useEffect(() => {
+    console.log('RentedBooks montado, recarregando aluguéis...');
+    fetchMyRentedBooks();
+  }, []);
+
+  useEffect(() => {
+    console.log('myBooks atualizado:', myBooks);
+  }, [myBooks]);
+
+  const activeRentals = myBooks.filter(book => !book.returned);
+  console.log('Aluguéis ativos:', activeRentals);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📚 Meus Aluguéis</Text>
       <FlatList
-        data={myBooks.filter(book => !book.returned)}
+        data={activeRentals}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
           <View style={styles.card}>

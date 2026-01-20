@@ -37,7 +37,17 @@ const ProfileInfo = () => {
             `http://10.215.36.185:8080/usuarios/${storedId}`,
           );
           console.log('Resposta da API:', response.data);
-          const user = response.data;
+          
+          // Extrair apenas os dados essenciais para evitar referência circular
+          const user = {
+            id: response.data.id,
+            nome: response.data.nome,
+            email: response.data.email,
+            telefone: response.data.telefone,
+            senha: response.data.senha
+          };
+          
+          console.log('Dados processados:', user);
 
           setId(user.id);
           setNome(user.nome);

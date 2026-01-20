@@ -1,9 +1,13 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {View, Text, FlatList, StyleSheet} from 'react-native';
 import {DadosContext} from '../contextData/contextData';
 
 const RentalHistory = () => {
-  const {history} = useContext(DadosContext);
+  const {history = [], fetchRentalHistory} = useContext(DadosContext);
+
+  useEffect(() => {
+    fetchRentalHistory();
+  }, [fetchRentalHistory]);
 
   return (
     <View style={styles.container}>

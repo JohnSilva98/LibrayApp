@@ -1,4 +1,4 @@
-import React, {useContext, useCallback, useState} from 'react';
+import React, {useContext, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {
   View,
@@ -11,23 +11,12 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Footer from '../footer/Footer';
-import axios from 'axios';
+import {DadosContext} from '../contextData/contextData';
 
 const BooksScreen = () => {
-  const [books, setBooks] = useState([]);
+  const {books = [], fetchBooks} = useContext(DadosContext);
   const navigation = useNavigation();
 
-  // 1. Função para buscar livros do banco
-  const fetchBooks = async () => {
-    try {
-      const response = await axios.get('http://10.215.36.185:8080/livros');
-      console.log('DADOS DO BANCO:', response.data[0]);
-      setBooks(response.data);
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Erro', 'Não foi possível carregar os livros do servidor.');
-    }
-  };
   // 2. Atualiza sempre que você entra na tela
   useFocusEffect(
     useCallback(() => {

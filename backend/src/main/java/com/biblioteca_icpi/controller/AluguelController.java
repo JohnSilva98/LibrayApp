@@ -37,4 +37,9 @@ public class AluguelController {
     public List<Aluguel> consultarAlugueis () {
         return aluguelService.consultarAlugueis();
     }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public List<Aluguel> consultarAlugueisPorUsuario(@PathVariable Long usuarioId) {
+        return aluguelService.consultarAlugueisPorUsuario(usuarioId);
+    }
 }

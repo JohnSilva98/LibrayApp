@@ -24,6 +24,9 @@ export default function LoginScreen() {
 
     setError('');
     try {
+      console.log('=== INICIANDO LOGIN ===');
+      console.log('Tentando login com:', {email, password});
+      
       const response = await axios.post(
         `${API_BASE}/usuarios/login`,
         {
@@ -37,20 +40,106 @@ export default function LoginScreen() {
           },
         },
       );
-      // 1. Pegamos os dados do usuário que o seu Java agora retorna
-      const {id, nome, role, fotoUrl} = response.data;
-
-      // 2. SALVANDO NO DISPOSITIVO (AsyncStorage é assíncrono!)
-      await AsyncStorage.setItem('userId', String(id));
-      await AsyncStorage.setItem('userName', nome);
-      await AsyncStorage.setItem('userRole', role);
-      if (fotoUrl) {
-        await AsyncStorage.setItem('userPhoto', fotoUrl);
+      
+      console.log('Status da resposta:', response.status);
+      
+      // Fazer parsing manual para evitar erro de referência circular
+      let responseData;
+      try {
+        if (typeof response.data === 'string') {
+          responseData = JSON.parse(response.data);
+        } else {
+          responseData = response.data;
+        }
+      } catch (parseError) {
+        console.error('Erro ao fazer parse da resposta:', parseError);
+        console.log('Tentando extrair dados com regex...');
+        
+        // Converter para string se não for
+        const dataString = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+        
+        // Regex melhorado para extrair dados essenciais
+        const idMatch = dataString.match(/"id":(\d+)/);
+        const nomeMatch = dataString.match(/"nome":"([^"]+)"/);
+        const emailMatch = dataString.match(/"email":"([^"]+)"/);
+        const roleMatch = dataString.match(/"role":"([^"]+)"/);
+        
+        if (idMatch && nomeMatch && emailMatch && roleMatch) {
+          responseData = {
+            id: parseInt(idMatch[1]),
+            nome: nomeMatch[1],
+            email: emailMatch[1],
+            role: roleMatch[1]
+          };
+          console.log('Dados extraídos com regex:', responseData);
+        } else {
+          console.error('Não foi possível extrair dados com regex');
+          console.log('idMatch:', idMatch);
+          console.log('nomeMatch:', nomeMatch);
+          console.log('emailMatch:', emailMatch);
+          console.log('roleMatch:', roleMatch);
+        }
+      }
+      
+      console.log('Resposta processada:', responseData);
+      
+      // Verificar se a resposta contém dados
+      if (!responseData) {
+        console.error('Resposta da API está vazia ou undefined');
+        setError('Erro no servidor. Tente novamente.');
+        return;
+      }
+      
+      // 1. Extrair apenas os dados essenciais do primeiro nível para evitar referência circular
+      const userData = {
+        id: responseData.id,
+        nome: responseData.nome,
+        email: responseData.email,
+        role: responseData.role,
+        fotoUrl: responseData.fotoUrl
+      };
+      
+      console.log('Dados extraídos:', userData);
+      
+      // Verificar se os dados essenciais existem
+      if (!userData.id || !userData.nome || !userData.role) {
+        console.error('Dados essenciais faltando:', userData);
+        setError('Dados do usuário incompletos. Contate o suporte.');
+        return;
       }
 
-      console.log('Login OK. ID salvo:', id);
+      console.log('=== SALVANDO NO ASYNCSTORAGE ===');
+      // 2. SALVANDO NO DISPOSITIVO (AsyncStorage é assíncrono!)
+      await AsyncStorage.setItem('userId', String(userData.id));
+      console.log('userId salvo:', userData.id);
+      
+      await AsyncStorage.setItem('userName', userData.nome);
+      console.log('userName salvo:', userData.nome);
+      
+      await AsyncStorage.setItem('userRole', userData.role);
+      console.log('userRole salvo:', userData.role);
+      
+      if (userData.fotoUrl) {
+        await AsyncStorage.setItem('userPhoto', userData.fotoUrl);
+        console.log('userPhoto salvo:', userData.fotoUrl);
+      }
+
+      console.log('=== VERIFICANDO DADOS SALVOS ===');
+      const verifyUserId = await AsyncStorage.getItem('userId');
+      const verifyUserName = await AsyncStorage.getItem('userName');
+      const verifyUserRole = await AsyncStorage.getItem('userRole');
+      console.log('Verificação - userId:', verifyUserId);
+      console.log('Verificação - userName:', verifyUserName);
+      console.log('Verificação - userRole:', verifyUserRole);
+
+      console.log('Login OK. ID salvo:', userData.id);
+      console.log('=== NAVEGANDO PARA HOME ===');
       navigation.navigate('HomeScreen');
     } catch (err) {
+      console.error('=== ERRO NO LOGIN ===');
+      console.error('Erro completo:', err);
+      console.error('Erro response:', err.response?.data);
+      console.error('Erro status:', err.response?.status);
       console.log('Erro no login:', err.response?.data);
       setError('Email ou senha incorretos.');
     }

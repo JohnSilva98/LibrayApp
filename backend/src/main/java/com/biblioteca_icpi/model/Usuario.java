@@ -41,7 +41,7 @@ public class Usuario {
     private String role = "USER"; // USER ou ADMIN
 
     @OneToMany(mappedBy = "usuario")
-    // @JsonIgnore     
+    @JsonIgnore     
     private List<Aluguel> alugueis;
 
     private String fotoUrl;

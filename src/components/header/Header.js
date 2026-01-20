@@ -12,9 +12,22 @@ const Header = () => {
 
   useEffect(() => {
     const carregarFoto = async () => {
+      console.log('=== CARREGANDO FOTO NO HEADER ===');
+      const userId = await AsyncStorage.getItem('userId');
+      const userName = await AsyncStorage.getItem('userName');
+      const userRole = await AsyncStorage.getItem('userRole');
       const fotoSalva = await AsyncStorage.getItem('userPhoto');
+      
+      console.log('Header - userId:', userId);
+      console.log('Header - userName:', userName);
+      console.log('Header - userRole:', userRole);
+      console.log('Header - userPhoto:', fotoSalva);
+      
       if (fotoSalva) {
         setFotoPerfil(fotoSalva);
+        console.log('Foto de perfil definida no header');
+      } else {
+        console.log('Nenhuma foto salva encontrada, usando padrão');
       }
     };
 

@@ -10,6 +10,7 @@ export const DadosProvider = ({children}) => {
   const [books, setBooks] = useState([]);
   const [cart, setCart] = useState([]);
   const [myBooks, setMyBooks] = useState([]);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const fetchBooks = useCallback(async () => {
@@ -45,6 +46,97 @@ export const DadosProvider = ({children}) => {
 
   const removeFromCart = bookId => {
     setCart(prev => prev.filter(b => b.id !== bookId));
+  };
+
+  const fetchMyRentedBooks = useCallback(async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        console.log('Usuário não identificado para carregar aluguéis');
+        return;
+      }
+
+      console.log('Buscando aluguéis do usuário:', userId);
+      const response = await axios.get(
+        `http://10.215.36.185:8080/alugueis/usuario/${userId}`,
+      );
+      
+      if (response.data) {
+        console.log('Aluguéis encontrados:', response.data.length);
+        // Processar dados para evitar referência circular
+        const processedRentals = response.data
+          .filter(rental => rental.status !== 'DEVOLVIDO')
+          .map(rental => ({
+          id: rental.livro.id,
+          title: rental.livro.nome,
+          author: rental.livro.autor,
+          image: rental.livro.capaUrl,
+          rentDate: rental.dataInicio,
+          returnDate: rental.dataDevolucao,
+          returned: rental.status === 'DEVOLVIDO',
+          rentalId: rental.id,
+        }));
+        
+        setMyBooks(processedRentals);
+        console.log('Meus livros processados:', processedRentals);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar aluguéis:', error);
+      console.error('Status do erro:', error.response?.status);
+      console.error('Dados do erro:', error.response?.data);
+      setMyBooks([]);
+    }
+  }, []);
+
+  const fetchRentalHistory = useCallback(async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        console.log('Usuário não identificado para carregar histórico');
+        return;
+      }
+
+      console.log('Buscando histórico de aluguéis do usuário:', userId);
+      const response = await axios.get(
+        `http://10.215.36.185:8080/alugueis/usuario/${userId}`,
+      );
+
+      if (response.data) {
+        const processedHistory = response.data.map(rental => ({
+          id: rental.livro.id,
+          title: rental.livro.nome,
+          author: rental.livro.autor,
+          image: rental.livro.capaUrl,
+          rentDate: rental.dataInicio,
+          returnDate: rental.dataDevolucao,
+          returned: rental.status === 'DEVOLVIDO',
+          rentalId: rental.id,
+        }));
+        setHistory(processedHistory);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar histórico:', error);
+      setHistory([]);
+    }
+  }, []);
+
+  const returnBook = async (rentalId) => {
+    try {
+      console.log('Devolvendo livro com rentalId:', rentalId);
+      
+      // Atualizar status do aluguel para devolvido
+      await axios.put(`http://10.215.36.185:8080/alugueis/${rentalId}`);
+      
+      Alert.alert('Sucesso', 'Livro devolvido com sucesso!');
+      
+      // Recarregar lista de aluguéis
+      await fetchMyRentedBooks();
+      await fetchRentalHistory();
+      fetchBooks(); // Atualizar lista geral de livros
+    } catch (error) {
+      console.error('Erro ao devolver livro:', error);
+      Alert.alert('Erro', 'Falha ao devolver livro.');
+    }
   };
 
   const confirmRent = async () => {
@@ -84,6 +176,10 @@ export const DadosProvider = ({children}) => {
         confirmRent,
         myBooks,
         setMyBooks,
+        history,
+        fetchRentalHistory,
+        fetchMyRentedBooks,
+        returnBook,
         loading,
       }}>
       {children}
