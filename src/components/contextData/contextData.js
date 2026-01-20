@@ -51,21 +51,26 @@ export const DadosProvider = ({children}) => {
         return;
       }
 
-      // Para cada livro no carrinho, fazemos um POST para o endpoint de aluguel
-      // Ajuste a URL abaixo conforme o seu Controller de Aluguéis no Spring
+      // Usamos um Loop para enviar cada livro separadamente
       for (const book of cart) {
-        await axios.post(`http://10.215.36.185:8080/alugueis`, {
-          usuarioId: userId,
-          livroId: book.id,
-        });
+        // O segredo está nestas chaves: devem ser idUsuario e idLivro
+        const payload = {
+          idUsuario: parseInt(userId),
+          idLivro: parseInt(book.id),
+        };
+
+        console.log('Enviando para o servidor:', payload);
+
+        await axios.post(`http://10.215.36.185:8080/alugueis`, payload);
       }
 
       Alert.alert('Sucesso', 'Aluguel realizado com sucesso!');
-      setCart([]); // Limpa carrinho
-      fetchBooks(); // Atualiza lista (para marcar como indisponível)
+      setCart([]);
+      fetchBooks(); // Isso vai atualizar o campo "disponivel" na Home
     } catch (error) {
-      console.error(error);
-      Alert.alert('Erro', 'Falha ao processar aluguel no servidor.');
+      // Log detalhado para ver o que o Java respondeu no erro 400
+      console.error('Erro detalhado:', error.response?.data);
+      Alert.alert('Erro', 'Falha ao processar aluguel. Verifique os dados.');
     }
   };
 

@@ -4,12 +4,11 @@ import com.biblioteca_icpi.dto.AlugarDTO;
 import com.biblioteca_icpi.model.Aluguel;
 import com.biblioteca_icpi.service.AluguelService;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/alugueis")
 public class AluguelController {
 
