@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function LoginScreen() {
+  const API_BASE = 'http://10.215.36.185:8080';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ export default function LoginScreen() {
     setError('');
     try {
       const response = await axios.post(
-        'http://10.215.36.185:8080/usuarios/login',
+        `${API_BASE}/usuarios/login`,
         {
           email: email,
           senha: password,
