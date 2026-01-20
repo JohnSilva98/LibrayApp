@@ -7,10 +7,8 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  FlatList,
 } from 'react-native';
-
-import {launchImageLibrary} from 'react-native-image-picker';
-import {supabase} from '@supabase/supabase-js';
 import axios from 'axios';
 import Footer from '../footer/Footer';
 import {useNavigation} from '@react-navigation/native';
@@ -22,65 +20,58 @@ const AddBook = () => {
   const [autor, setAutor] = useState('');
   const [descricao, setDescricao] = useState('');
   const [genero, setGenero] = useState('');
-  const [image, setImage] = useState(null);
+  const [capaUrl, setCapaUrl] = useState(null); // Agora guardamos apenas a URL da string
+  const [sugestoes, setSugestoes] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  // =========================
-  // selecionar imagem
-  // =========================
-  const pickImage = async () => {
-    const result = await launchImageLibrary({
-      mediaType: 'photo',
-      includeBase64: true,
-      quality: 0.8,
-    });
-
-    if (result?.assets?.length > 0) {
-      setImage(result.assets[0]); // contém base64 e uri
+  // Busca no Google Books
+  const handleBuscaNome = async texto => {
+    setNome(texto);
+    if (texto.length > 3) {
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/books/v1/volumes?q=intitle:${texto}&maxResults=5`,
+        );
+        const data = await response.json();
+        if (data.items) {
+          const livros = data.items.map(item => ({
+            id: item.id,
+            nome: item.volumeInfo.title,
+            autor: item.volumeInfo.authors
+              ? item.volumeInfo.authors[0]
+              : 'Autor Desconhecido',
+            descricao: item.volumeInfo.description || 'Sem descrição',
+            genero: item.volumeInfo.categories
+              ? item.volumeInfo.categories[0]
+              : 'Outros',
+            capa:
+              item.volumeInfo.imageLinks?.thumbnail?.replace(
+                'http://',
+                'https://',
+              ) || null,
+          }));
+          setSugestoes(livros);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      setSugestoes([]);
     }
   };
 
-  // Função para buscar livros na API do Google
-  const buscarLivrosNoGoogle = async nomeLivro => {
-    if (nomeLivro.length < 3) return; // Só busca se tiver mais de 3 letras
-
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=intitle:${nomeLivro}&maxResults=5`,
-      );
-      const data = await response.json();
-
-      if (data.items) {
-        // Mapeamos os resultados para o formato que seu DTO espera
-        return data.items.map(item => ({
-          nome: item.volumeInfo.title,
-          autor: item.volumeInfo.authors
-            ? item.volumeInfo.authors[0]
-            : 'Autor Desconhecido',
-          descricao: item.volumeInfo.description || 'Sem descrição disponível',
-          genero: item.volumeInfo.categories
-            ? item.volumeInfo.categories[0]
-            : 'Outros',
-          capaUrl: item.volumeInfo.imageLinks?.thumbnail.replace(
-            'http://',
-            'https://',
-          ), // Força HTTPS para evitar erro de segurança
-        }));
-      }
-      return [];
-    } catch (error) {
-      console.error('Erro ao buscar livros:', error);
-      return [];
-    }
+  // Preenche o formulário ao selecionar uma sugestão
+  const selecionarLivro = livro => {
+    setNome(livro.nome);
+    setAutor(livro.autor);
+    setDescricao(livro.descricao);
+    setGenero(livro.genero);
+    setCapaUrl(livro.capa);
+    setSugestoes([]); // Limpa as sugestões
   };
 
   const handleAddBook = async () => {
-    let imageUrl = null;
-
-    // if (image) {
-    //   imageUrl = await uploadToSupabase();
-    // }
-
+    setUploading(true);
     try {
       const response = await axios.post(
         'http://10.215.36.185:8080/livros',
@@ -89,59 +80,66 @@ const AddBook = () => {
           autor,
           genero,
           descricao,
-          imagem: imageUrl,
+          capaUrl, // Enviamos a URL da string diretamente
         },
-        {
-          headers: {'Content-Type': 'application/json'},
-        },
+        {headers: {'Content-Type': 'application/json'}},
       );
-
       console.log('OK:', response.data);
       navigation.navigate('HomeScreen');
     } catch (err) {
-      console.log('Erro insert:', err.response?.data || err);
+      console.log('Erro ao salvar:', err.response?.data || err);
+      setUploading(false);
     }
   };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.form}>
-        <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-          {image ? (
-            <Image
-              source={{uri: image.uri}}
-              style={{width: 120, height: 160, borderRadius: 8}}
-            />
+        {/* Visualização da Capa Selecionada */}
+        <View style={styles.coverPreview}>
+          {capaUrl ? (
+            <Image source={{uri: capaUrl}} style={styles.image} />
           ) : (
-            <Text style={{color: '#555'}}>Selecionar capa do livro</Text>
+            <View style={styles.placeholder}>
+              <Text style={{color: '#888'}}>A capa aparecerá aqui</Text>
+            </View>
           )}
-        </TouchableOpacity>
+        </View>
 
         <Text style={styles.label}>Título do Livro</Text>
         <TextInput
           style={styles.input}
           value={nome}
-          onChangeText={setNome}
-          placeholder="Digite o título"
-          placeholderTextColor="#000"
+          onChangeText={handleBuscaNome}
+          placeholder="Comece a digitar o nome..."
+          placeholderTextColor="#999"
         />
 
+        {/* Lista de Sugestões Estilizada */}
+        {sugestoes.length > 0 && (
+          <View style={styles.sugestaoContainer}>
+            {sugestoes.map(item => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.sugestaoItem}
+                onPress={() => selecionarLivro(item)}>
+                <Text style={styles.sugestaoTexto}>
+                  {item.nome} - {item.autor}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
         <Text style={styles.label}>Autor</Text>
-        <TextInput
-          style={styles.input}
-          value={autor}
-          onChangeText={setAutor}
-          placeholder="Digite o autor"
-          placeholderTextColor="#000"
-        />
+        <TextInput style={styles.input} value={autor} onChangeText={setAutor} />
 
         <Text style={styles.label}>Descrição</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, {height: 80}]}
           value={descricao}
           onChangeText={setDescricao}
-          placeholder="Digite a descrição"
-          placeholderTextColor="#000"
+          multiline
         />
 
         <Text style={styles.label}>Gênero</Text>
@@ -149,54 +147,61 @@ const AddBook = () => {
           style={styles.input}
           value={genero}
           onChangeText={setGenero}
-          placeholder="Digite o gênero"
-          placeholderTextColor="#000"
         />
 
-        <TouchableOpacity onPress={handleAddBook}>
+        <TouchableOpacity onPress={handleAddBook} disabled={uploading}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>
-              {uploading ? 'Enviando...' : 'Adicionar Livro'}
+              {uploading ? 'Salvando...' : 'Confirmar Cadastro'}
             </Text>
           </View>
         </TouchableOpacity>
       </ScrollView>
-
       <Footer />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1},
+  container: {flex: 1, backgroundColor: '#fff'},
   form: {padding: 20},
-  label: {fontSize: 18, marginBottom: 10, color: '#111'},
+  label: {fontSize: 16, fontWeight: 'bold', marginBottom: 5, color: '#333'},
   input: {
-    height: 45,
     borderWidth: 1,
-    borderColor: '#222',
+    borderColor: '#ccc',
     borderRadius: 8,
-    marginBottom: 20,
-    paddingLeft: 10,
-    fontSize: 14,
+    padding: 10,
+    marginBottom: 15,
     color: '#000',
   },
+  coverPreview: {alignItems: 'center', marginBottom: 20},
+  image: {width: 120, height: 180, borderRadius: 8},
+  placeholder: {
+    width: 120,
+    height: 180,
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  sugestaoContainer: {
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginTop: -10,
+    marginBottom: 15,
+    elevation: 3, // sombra no android
+  },
+  sugestaoItem: {padding: 12, borderBottomWidth: 1, borderBottomColor: '#eee'},
+  sugestaoTexto: {fontSize: 14, color: '#333'},
   button: {
     backgroundColor: '#d2831cff',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
   },
-  buttonText: {color: '#fff', fontSize: 16},
-  imagePicker: {
-    width: 130,
-    height: 170,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 25,
-  },
+  buttonText: {color: '#fff', fontSize: 16, fontWeight: 'bold'},
 });
 
 export default AddBook;

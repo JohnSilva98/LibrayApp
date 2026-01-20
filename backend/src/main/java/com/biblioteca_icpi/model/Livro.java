@@ -28,14 +28,18 @@ public class Livro {
 
     private String autor;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String descricao;
 
     private String genero;
 
+    
+
     private boolean disponivel = true;
 
     @Column(name = "capa_url")
-private String capaUrl;
+    private String capaUrl;
 
     @OneToMany(mappedBy = "livro")
     private List<Aluguel> alugueis;
@@ -94,5 +98,12 @@ private String capaUrl;
 
     public void setAlugueis(List<Aluguel> alugueis) {
         this.alugueis = alugueis;
+    }
+
+    public void setCapaUrl(String capaUrl) {
+        this.capaUrl = capaUrl;
+    }
+    public String getCapaUrl() {
+        return capaUrl;
     }
 }

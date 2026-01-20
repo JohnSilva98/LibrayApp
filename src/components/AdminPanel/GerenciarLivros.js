@@ -68,7 +68,8 @@ const GerenciarLivros = () => {
       {/* 1. Mantenha item.image se houver, ou use uma imagem padrão se vier vazio */}
       <Image
         source={{
-          uri: item.image || 'https://via.placeholder.com/50x75?text=Sem+Capa',
+          uri:
+            item.capaUrl || 'https://via.placeholder.com/50x75?text=Sem+Capa',
         }}
         style={styles.bookImage}
       />

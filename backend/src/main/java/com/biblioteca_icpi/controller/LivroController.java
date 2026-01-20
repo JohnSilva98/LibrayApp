@@ -4,76 +4,51 @@ import com.biblioteca_icpi.dto.CadastrarLivroDTO;
 import com.biblioteca_icpi.dto.EditarLivroDTO;
 import com.biblioteca_icpi.model.Livro;
 import com.biblioteca_icpi.service.LivroService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.biblioteca_icpi.service.ImageService; // Ajuste o path conforme seu projeto
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/livros")
 public class LivroController {
 
     private final LivroService livroService;
-    private final ImageService imageService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public LivroController(LivroService livroService, ImageService imageService) {
+    // Removemos o ImageService e o ObjectMapper daqui, pois o upload agora é feito via Google no Front
+    public LivroController(LivroService livroService) {
         this.livroService = livroService;
-        this.imageService = imageService;
     }
 
-    // ✅ NOVO: Upload com imagem + JSON
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Livro> cadastrarLivroComImagem(
-            @RequestPart("livro") String livroJson,
-            @RequestPart("image") MultipartFile file) {
-        try {
-            // Parse JSON do campo "livro"
-            Map<String, Object> livroData = objectMapper.readValue(livroJson, Map.class);
-            
-            // Upload da imagem
-            String capaUrl = imageService.upload(file);
-            livroData.put("capaUrl", capaUrl);
-            
-            // Converter para DTO e salvar
-            CadastrarLivroDTO dto = objectMapper.convertValue(livroData, CadastrarLivroDTO.class);
-            Livro livro = livroService.cadastrarLivro(dto);
-            
-            return ResponseEntity.ok(livro);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao cadastrar livro com imagem: " + e.getMessage(), e);
-        }
-    }
-
-    // ✅ MANTER: POST sem imagem (JSON puro)
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Livro cadastrarLivroSemImagem(@Valid @RequestBody CadastrarLivroDTO dto) {
-        return livroService.cadastrarLivro(dto);
+    /**
+     * Cadastro Simplificado:
+     * Recebe o JSON direto do React Native com os dados do Google Books.
+     * O campo 'capaUrl' no DTO já virá com o link do Google.
+     */
+    @PostMapping
+    public ResponseEntity<Livro> cadastrar(@Valid @RequestBody CadastrarLivroDTO dto) {
+        Livro livro = livroService.cadastrarLivro(dto);
+        return ResponseEntity.ok(livro);
     }
 
     @GetMapping("/{idLivro}")
-    public Livro buscarLivro(@PathVariable Long idLivro) {
-        return livroService.buscarLivroNoBancoDeDados(idLivro);
+    public ResponseEntity<Livro> buscarLivro(@PathVariable Long idLivro) {
+        return ResponseEntity.ok(livroService.buscarLivroNoBancoDeDados(idLivro));
     }
 
     @PutMapping("/{idLivro}")
-    public Livro editarLivro(@PathVariable Long idLivro, @Valid @RequestBody EditarLivroDTO dto) {
-        return livroService.editarLivro(idLivro, dto);
+    public ResponseEntity<Livro> editarLivro(@PathVariable Long idLivro, @Valid @RequestBody EditarLivroDTO dto) {
+        return ResponseEntity.ok(livroService.editarLivro(idLivro, dto));
     }
 
     @DeleteMapping("/{idLivro}")
-    public void deletarLivro(@PathVariable Long idLivro) {
+    public ResponseEntity<Void> deletarLivro(@PathVariable Long idLivro) {
         livroService.excluirLivro(idLivro);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    @ResponseBody
     public List<Livro> listarLivros() {
         return livroService.listarLivros();
     }

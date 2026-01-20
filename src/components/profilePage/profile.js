@@ -1,51 +1,87 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
 } from 'react-native';
-import {DadosContext} from '../contextData/contextData';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useEffect, useState} from 'react';
-import AdminDashboard from '../AdminPanel/AdminPanel';
+import {launchImageLibrary} from 'react-native-image-picker'; // Reimportado para a foto de perfil
+import axios from 'axios';
 
 const Profile = () => {
-  const {myBooks, returnBook} = useContext(DadosContext);
   const navigation = useNavigation();
-  const handleMyBooksPress = () => {
-    navigation.navigate('rentedBooks');
-  };
-
   const [userRole, setUserRole] = useState('');
+  const [userPhoto, setUserPhoto] = useState('https://via.placeholder.com/150'); // Foto padrão
 
   useEffect(() => {
-    // Função para ler a role do storage
     const loadUserData = async () => {
       const role = await AsyncStorage.getItem('userRole');
+      const photo = await AsyncStorage.getItem('userPhoto'); // Tenta pegar a foto salva no login
       setUserRole(role);
+      if (photo) setUserPhoto(photo);
     };
     loadUserData();
   }, []);
 
-  const handleAdminPanel = () => {
-    navigation.navigate('AdminPanel');
+  // FUNÇÃO PARA TROCAR A FOTO
+  const handleEditPhoto = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.8,
+    });
+
+    if (result.didCancel) return;
+
+    if (result.assets && result.assets.length > 0) {
+      const selectedImage = result.assets[0];
+      uploadPhoto(selectedImage);
+    }
+  };
+
+  // ENVIO PARA O BACKEND (Cloudinary via Java)
+  const uploadPhoto = async imageFile => {
+    try {
+      const userId = await AsyncStorage.getItem('userId'); // Você vai precisar salvar o ID no login
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageFile.uri,
+        type: imageFile.type,
+        name: `profile_${userId}.jpg`,
+      });
+
+      // Rota que vamos criar no Java
+      const response = await axios.post(
+        `http://10.215.36.185:8080/usuarios/${userId}/upload-foto`,
+        formData,
+        {headers: {'Content-Type': 'multipart/form-data'}},
+      );
+
+      const newPhotoUrl = response.data.fotoUrl;
+      setUserPhoto(newPhotoUrl);
+      await AsyncStorage.setItem('userPhoto', newPhotoUrl);
+      Alert.alert('Sucesso', 'Foto de perfil atualizada!');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Erro', 'Não foi possível enviar a foto.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.title}>Meu Perfil</Text>
-        <Image
-          source={{
-            uri: 'https://images.unsplash.com/photo-1755380549803-c6ab36193884?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0',
-          }}
-          style={{height: 100, width: 100, borderRadius: 50, marginBottom: 15}}
-        />
+      <Text style={styles.title}>Meu Perfil</Text>
+
+      {/* CONTAINER DA FOTO COM O LÁPIS */}
+      <View style={styles.photoContainer}>
+        <Image source={{uri: userPhoto}} style={styles.profileImage} />
+        <TouchableOpacity style={styles.editButton} onPress={handleEditPhoto}>
+          <Text style={{fontSize: 16}}>✏️</Text>
+        </TouchableOpacity>
       </View>
+
       <View style={styles.profileMenu}>
         <TouchableOpacity style={styles.menuItem}>
           <Text>👤 Informações do Perfil</Text>
@@ -55,13 +91,19 @@ const Profile = () => {
           onPress={() => navigation.navigate('RentalHistory')}>
           <Text>🕓 Histórico de aluguéis</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handleMyBooksPress}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('rentedBooks')}>
           <Text>📚 Meus livros alugados</Text>
         </TouchableOpacity>
-        {/* PAINEL ADMIN CONDICIONAL */}
+
         {userRole === 'ADMIN' && (
-          <TouchableOpacity style={styles.menuItem} onPress={handleAdminPanel}>
-            <Text>🛠️ Painel Administrativo</Text>
+          <TouchableOpacity
+            style={[styles.menuItem, {backgroundColor: '#d2831c'}]}
+            onPress={() => navigation.navigate('AdminPanel')}>
+            <Text style={{color: '#fff', fontWeight: 'bold'}}>
+              🛠️ Painel Administrativo
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -74,21 +116,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ddd',
     padding: 20,
-    display: 'flex',
-
     alignItems: 'center',
   },
-  title: {
-    color: '#111',
-    fontSize: 22,
-    marginBottom: 15,
+  title: {color: '#111', fontSize: 22, marginBottom: 25, fontWeight: 'bold'},
+  photoContainer: {position: 'relative', marginBottom: 20},
+  profileImage: {
+    height: 120,
+    width: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#fff',
   },
-  profileMenu: {marginTop: 30, width: '100%'},
+  editButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 5,
+    backgroundColor: '#fff',
+    width: 35,
+    height: 35,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5, // Sombra no Android
+    shadowColor: '#000', // Sombra no iOS
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+  },
+  profileMenu: {marginTop: 10, width: '100%'},
   menuItem: {
-    padding: 15,
-    backgroundColor: '#b5b5b5ff',
-    borderRadius: 10,
-    marginBottom: 10,
+    padding: 18,
+    backgroundColor: '#b5b5b5',
+    borderRadius: 12,
+    marginBottom: 12,
   },
 });
 

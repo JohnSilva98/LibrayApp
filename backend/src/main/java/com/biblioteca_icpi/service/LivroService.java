@@ -37,6 +37,7 @@ public class LivroService {
             livro.setAutor(dto.getAutor());
             livro.setDescricao(dto.getDescricao());
             livro.setGenero(dto.getGenero());
+            livro.setCapaUrl(dto.getCapaUrl());
             Livro livroSalvo = livroRepository.save(livro);
             return livroSalvo;
         }
