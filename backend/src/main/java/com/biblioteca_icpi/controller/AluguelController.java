@@ -20,7 +20,7 @@ public class AluguelController {
 
     @PostMapping
     public Aluguel alugarLivro (@Valid @RequestBody AlugarDTO dto) {
-        return aluguelService.alugarLivro(dto.getIdLivro(), dto.getIdUsuario());
+        return aluguelService.alugarLivro(dto.getIdUsuario(), dto.getIdLivro());
     }
 
     @PutMapping("/{idAluguel}")
