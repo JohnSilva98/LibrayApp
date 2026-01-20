@@ -40,6 +40,40 @@ const AddBook = () => {
     }
   };
 
+  // Função para buscar livros na API do Google
+  const buscarLivrosNoGoogle = async nomeLivro => {
+    if (nomeLivro.length < 3) return; // Só busca se tiver mais de 3 letras
+
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=intitle:${nomeLivro}&maxResults=5`,
+      );
+      const data = await response.json();
+
+      if (data.items) {
+        // Mapeamos os resultados para o formato que seu DTO espera
+        return data.items.map(item => ({
+          nome: item.volumeInfo.title,
+          autor: item.volumeInfo.authors
+            ? item.volumeInfo.authors[0]
+            : 'Autor Desconhecido',
+          descricao: item.volumeInfo.description || 'Sem descrição disponível',
+          genero: item.volumeInfo.categories
+            ? item.volumeInfo.categories[0]
+            : 'Outros',
+          capaUrl: item.volumeInfo.imageLinks?.thumbnail.replace(
+            'http://',
+            'https://',
+          ), // Força HTTPS para evitar erro de segurança
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error('Erro ao buscar livros:', error);
+      return [];
+    }
+  };
+
   const handleAddBook = async () => {
     let imageUrl = null;
 

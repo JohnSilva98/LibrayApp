@@ -18,7 +18,8 @@ public class ImageService {
     @Value("${cloudinary.api-secret}")
     private String apiSecret;
 
-    public String uploadImage(MultipartFile file) throws IOException {
+    // ✅ MUDE o nome para "upload" (Controller chama imageService.upload())
+    public String upload(MultipartFile file) throws IOException {  // ← era uploadImage
         OkHttpClient client = new OkHttpClient();
         
         RequestBody requestBody = new MultipartBody.Builder()
@@ -26,10 +27,8 @@ public class ImageService {
             .addFormDataPart("file", file.getOriginalFilename(), 
                 RequestBody.create(file.getBytes(), 
                     MediaType.parse(file.getContentType())))
-            .addFormDataPart("upload_preset", "ml_default")
-            .addFormDataPart("cloud_name", cloudName)
-            .addFormDataPart("api_key", apiKey)
-            .build();
+            .addFormDataPart("upload_preset", "ml_default")  // ✅ REMOVA cloud_name/api_key daqui
+            .build();  // ← Cloudinary pega do URL
 
         Request request = new Request.Builder()
             .url("https://api.cloudinary.com/v1_1/" + cloudName + "/image/upload")
@@ -38,13 +37,14 @@ public class ImageService {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Upload falhou: " + response.code());
+                throw new IOException("Upload falhou: " + response.code() + " - " + response.body().string());
             }
             
-            // Extrai URL da resposta JSON
+            // ✅ CORREÇÃO: Extrai URL completa corretamente
             String jsonResponse = response.body().string();
-            String secureUrl = jsonResponse.split("\"secure_url\":\"")[1];
-            return secureUrl.split("\"")[0];
+            String secureUrl = jsonResponse.split("\"secure_url\":\"")[1].split("\"")[0]
+                .replace("\\u002F", "/");  // ✅ Corrige barras escapadas
+            return secureUrl;
         }
     }
 }
