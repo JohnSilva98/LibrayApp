@@ -9,7 +9,7 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(Long id, String nome, String email, String senha, String telefone, String role, List<Aluguel> alugueis) {
+    public Usuario(Long id, String nome, String email, String senha, String telefone, String role, String fotoUrl, List<Aluguel> alugueis) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -17,6 +17,8 @@ public class Usuario {
         this.telefone = telefone;
         this.role = role;
         this.alugueis = alugueis;
+        this.fotoUrl = fotoUrl;
+
    
     }
 
@@ -39,6 +41,8 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<Aluguel> alugueis;
 
+    private String fotoUrl;
+
     // getters e setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -52,7 +56,13 @@ public class Usuario {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
+    public String getFotoUrl() { 
+        return fotoUrl; 
+    }
     
+    public void setFotoUrl(String fotoUrl) { 
+        this.fotoUrl = fotoUrl; 
+    }
  
 
     public String getTelefone() { return telefone; }

@@ -20,6 +20,11 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // Método para salvar ou atualizar um objeto Usuario completo
+    public Usuario salvar(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+}   
+
     public Usuario buscarUsuarioNoBanco (Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado!"));
     }
@@ -34,6 +39,7 @@ public class UsuarioService {
             usuario.setEmail(dto.getEmail());
             usuario.setSenha(dto.getSenha());
             usuario.setTelefone(dto.getTelefone());
+            usuario.setFotoUrl("https://res.cloudinary.com/dbmpbrkkq/image/upload/v1768908568/avatar_k7dzee.jpg");
             Usuario usuarioSalvo = usuarioRepository.save(usuario);
             return usuarioSalvo;
         }

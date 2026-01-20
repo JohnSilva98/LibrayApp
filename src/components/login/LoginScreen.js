@@ -37,13 +37,17 @@ export default function LoginScreen() {
         },
       );
       // 1. Pegamos os dados do usuário que o seu Java agora retorna
-      const {nome, role} = response.data;
+      const {id, nome, role, fotoUrl} = response.data;
 
       // 2. SALVANDO NO DISPOSITIVO (AsyncStorage é assíncrono!)
+      await AsyncStorage.setItem('userId', String(id));
       await AsyncStorage.setItem('userName', nome);
       await AsyncStorage.setItem('userRole', role);
+      if (fotoUrl) {
+        await AsyncStorage.setItem('userPhoto', fotoUrl);
+      }
 
-      console.log('Login OK:', response.data);
+      console.log('Login OK. ID salvo:', id);
       navigation.navigate('HomeScreen');
     } catch (err) {
       console.log('Erro no login:', err.response?.data);

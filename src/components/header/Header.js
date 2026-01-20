@@ -1,9 +1,27 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const [fotoPerfil, setFotoPerfil] = useState(
+    'https://res.cloudinary.com/dbmpbrkkq/image/upload/v1768908568/avatar_k7dzee.jpg',
+  );
+
+  useEffect(() => {
+    const carregarFoto = async () => {
+      const fotoSalva = await AsyncStorage.getItem('userPhoto');
+      if (fotoSalva) {
+        setFotoPerfil(fotoSalva);
+      }
+    };
+
+    if (isFocused) {
+      carregarFoto();
+    }
+  }, [isFocused]);
 
   const hoje = new Date();
   const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -40,7 +58,7 @@ const Header = () => {
         <Image
           style={styles.profilePhoto}
           source={{
-            uri: 'https://images.unsplash.com/photo-1755380549803-c6ab36193884?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0',
+            uri: fotoPerfil,
           }}
         />
       </TouchableOpacity>

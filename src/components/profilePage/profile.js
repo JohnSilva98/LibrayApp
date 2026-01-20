@@ -15,7 +15,9 @@ import axios from 'axios';
 const Profile = () => {
   const navigation = useNavigation();
   const [userRole, setUserRole] = useState('');
-  const [userPhoto, setUserPhoto] = useState('https://via.placeholder.com/150'); // Foto padrão
+  const [userPhoto, setUserPhoto] = useState(
+    'https://res.cloudinary.com/dbmpbrkkq/image/upload/v1768908568/avatar_k7dzee.jpg',
+  ); // Foto padrão
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -67,6 +69,7 @@ const Profile = () => {
     } catch (error) {
       console.log(error);
       Alert.alert('Erro', 'Não foi possível enviar a foto.');
+      console.log('Erro detalhado:', error.response?.data || error.message);
     }
   };
 
