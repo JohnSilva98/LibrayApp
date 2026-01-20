@@ -55,7 +55,7 @@ class App extends Component {
               <Stack.Screen
                 name="HomeScreen"
                 component={HomeScreen}
-                options={{title: 'Home', headerBackVisible: false}}
+                options={{title: 'Biblioteca ICPI', headerBackVisible: false}}
               />
               <Stack.Screen
                 name="Search"
