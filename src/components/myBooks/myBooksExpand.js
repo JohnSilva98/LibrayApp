@@ -31,6 +31,16 @@ const MyBooksExpandable = ({myBooks, navigation}) => {
     outputRange: [350, 700],
   });
 
+  const formatDate = dateValue => {
+    if (!dateValue) return '';
+    const dateObj = new Date(dateValue);
+    if (Number.isNaN(dateObj.getTime())) return '';
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <Animated.View style={[styles.container, {height: heightInterpolate}]}>
       <View style={styles.header}>
@@ -52,11 +62,13 @@ const MyBooksExpandable = ({myBooks, navigation}) => {
         </TouchableOpacity>
       </View>
 
-      {myBooks[0] && <MainBookCard data={myBooks[0]} />}
+      {!expanded && myBooks[0] && (
+        <MainBookCard data={myBooks[0]} formatDate={formatDate} />
+      )}
 
-      {expanded && myBooks.length > 1 && (
+      {expanded && myBooks.length > 0 && (
         <FlatList
-          data={myBooks.slice(1)}
+          data={myBooks}
           keyExtractor={(item, index) => index.toString()}
           numColumns={2}
           columnWrapperStyle={{
@@ -65,7 +77,7 @@ const MyBooksExpandable = ({myBooks, navigation}) => {
           }}
           renderItem={({item}) => (
             <TouchableOpacity onPress={() => handleBookPress(item)}>
-              <BookCard data={item} />
+              <BookCard data={item} formatDate={formatDate} />
             </TouchableOpacity>
           )}
           contentContainerStyle={{paddingBottom: 120}}
@@ -74,14 +86,14 @@ const MyBooksExpandable = ({myBooks, navigation}) => {
     </Animated.View>
   );
 };
-const MyBookCard = ({data}) => (
+const MyBookCard = ({data, formatDate}) => (
   <View style={styles.mainBookCard}>
     <Image source={{uri: data.image}} style={styles.myBookImage} />
     <View style={styles.bookInfo}>
       <Text style={styles.mainTitle}>{data.title}</Text>
       <Text style={styles.mainAuthor}>{data.author}</Text>
       {data.returnDate && (
-        <Text style={styles.returnDate}>{data.returnDate}</Text>
+        <Text style={styles.returnDate}>{formatDate(data.returnDate)}</Text>
       )}
       <View style={styles.progressBarContainer}>
         <View
@@ -102,14 +114,14 @@ const BookCard = ({data}) => (
   </View>
 );
 
-const MainBookCard = ({data}) => (
+const MainBookCard = ({data, formatDate}) => (
   <View style={styles.mainBookCard}>
     <Image source={{uri: data.image}} style={styles.myBookImage} />
     <View style={styles.bookInfo}>
       <Text style={styles.mainTitle}>{data.title}</Text>
       <Text style={styles.mainAuthor}>{data.author}</Text>
       {data.returnDate && (
-        <Text style={styles.returnDate}>{data.returnDate}</Text>
+        <Text style={styles.returnDate}>{formatDate(data.returnDate)}</Text>
       )}
       <View style={styles.progressBarContainer}>
         <View
