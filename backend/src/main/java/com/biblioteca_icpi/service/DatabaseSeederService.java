@@ -17,7 +17,10 @@ public class DatabaseSeederService {
     }
 
     public void popularBanco() {
-        if (livroRepository.count() > 0) return; // Só popula se o banco estiver vazio
+        if (livroRepository.count() > 0){
+            System.out.println("⚠️ Banco já populado. Pulando Seed.");
+        return;
+        }
 
         RestTemplate restTemplate = new RestTemplate();
         String[] temas = {"Fiction", "History", "Technology", "Science", "Mystery"};

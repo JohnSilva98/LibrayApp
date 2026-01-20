@@ -6,7 +6,9 @@ import {Alert} from 'react-native';
 export const DadosContext = createContext();
 
 export const DadosProvider = ({children}) => {
-  const [books, setBooks] = useState([]); // Começa vazio
+  const [books, setBooks] = useState([
+    {id: 1, nome: 'Teste de Conexão', autor: 'App', capaUrl: ''},
+  ]); // Começa vazio
   const [cart, setCart] = useState([]);
   const [myBooks, setMyBooks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,17 +16,20 @@ export const DadosProvider = ({children}) => {
   // --- 1. BUSCAR LIVROS DO BACKEND ---
   const fetchBooks = useCallback(async () => {
     try {
+      console.log('Iniciando busca de livros...');
       const response = await axios.get('http://10.215.36.185:8080/livros');
-      setBooks(response.data);
+
+      console.log('Livros recebidos do Java:', response.data.length);
+      setBooks(response.data); // Aqui os livros entram no estado
     } catch (error) {
-      console.error('Erro ao buscar livros:', error);
+      console.error('Erro na conexão com o Backend:', error);
     }
   }, []);
 
   // Carrega os livros assim que o App abre
   useEffect(() => {
     fetchBooks();
-  }, [fetchBooks]);
+  }, []);
 
   // --- 2. ADICIONAR AO CARRINHO ---
   const addToCart = book => {

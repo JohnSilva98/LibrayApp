@@ -26,8 +26,9 @@ const Arrivals = () => {
     navigation.navigate('BookDetails', {book});
   };
 
-  const newBooks = Array.isArray(books) ? books.slice(0, 8) : [];
-
+  const newBooks = React.useMemo(() => {
+    return Array.isArray(books) ? books.slice(0, 8) : [];
+  }, [books]);
   const [expanded, setExpanded] = useState(false);
   const minHeight = 350;
   const maxHeight = 700;
